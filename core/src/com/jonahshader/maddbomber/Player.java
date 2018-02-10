@@ -11,9 +11,11 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.jonahshader.maddbomber.GameItems.Bomb;
-import com.jonahshader.maddbomber.GameItems.Explosion;
+import com.jonahshader.maddbomber.MatchSystems.PlayerSpawner;
 
 import java.util.ArrayList;
+
+import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
 
 public class Player implements InputProcessor{
     final static double SPEED_MAX = 7; // 1 tile per second
@@ -35,9 +37,10 @@ public class Player implements InputProcessor{
     private MapProperties prop;
     private GameWorld gameWorld;
     private MaddBomber game;
+    private PlayerSpawner spawner;
     private int mapTileWidth;
     private int mapTileHeight;
-    private int playerId;
+    private boolean spawned = true;
 
     private ArrayList<Bomb> bombs;
     private ArrayList<Bomb> bombsIgnored; //bombs are put into here until the player moves off of them
@@ -52,8 +55,8 @@ public class Player implements InputProcessor{
         this.itemAtlas = game.assets.manager.get(game.assets.itemAtlas, TextureAtlas.class);
         this.gameWorld = gameWorld;
         this.game = game;
-        this.playerId = playerId;
         TextureRegion tr = new TextureRegion(itemAtlas.findRegion("player"));
+        spawner = new PlayerSpawner(gameWorld, this);
         prop = map.getProperties();
         maxDeployedBombs = 2;
         explosionSize = 2;
@@ -63,10 +66,10 @@ public class Player implements InputProcessor{
         mapTileWidth = prop.get("width", Integer.class);
         mapTileHeight = prop.get("height", Integer.class);
 
-        x = (tileX * MaddBomber.TILE_SIZE) + (MaddBomber.TILE_SIZE / 2);
-        y = (tileY * MaddBomber.TILE_SIZE) + (MaddBomber.TILE_SIZE / 2);
+        x = (tileX * TILE_SIZE) + (TILE_SIZE / 2);
+        y = (tileY * TILE_SIZE) + (TILE_SIZE / 2);
 
-        hitbox = new Rectangle(tileX * MaddBomber.TILE_SIZE, tileY * MaddBomber.TILE_SIZE, (float) width, (float) height);
+        hitbox = new Rectangle(tileX * TILE_SIZE, tileY * TILE_SIZE, (float) width, (float) height);
         sprite = new Sprite(tr);
         sprite.setCenterX((float) x);
         sprite.setCenterY((float) y);
@@ -153,6 +156,19 @@ public class Player implements InputProcessor{
         return false;
     }
 
+    public void kill(Player killer, String cause) {
+        spawned = false;
+        spawner.requestRespawn();
+        System.out.println(cause);
+    }
+
+    public void respawn(int spawnTileX, int spawnTileY) {
+        x = (spawnTileX * TILE_SIZE) + TILE_SIZE / 2;
+        y = (spawnTileY * TILE_SIZE) + TILE_SIZE / 2;
+        spawned = true;
+        run(0);
+    }
+
     private void move(float dt) {
         double px = x;
         double py = y;
@@ -203,8 +219,8 @@ public class Player implements InputProcessor{
         }
 
         //move the player based on this speed
-        x += xSpeed * dt * MaddBomber.TILE_SIZE;
-        y += ySpeed * dt * MaddBomber.TILE_SIZE;
+        x += xSpeed * dt * TILE_SIZE;
+        y += ySpeed * dt * TILE_SIZE;
 
         if (xSpeed != 0 || ySpeed != 0) {
             sprite.setRotation((float) (180.0 * Math.atan2(ySpeed, xSpeed) / Math.PI) - 90);
@@ -243,8 +259,15 @@ public class Player implements InputProcessor{
     }
 
     public void run(float dt) {
-        move(dt);
-        checkBombCollision();
+        if (spawned) {
+            move(dt);
+            checkBombCollision();
+            checkExplosionCollision();
+            checkPickupCollision();
+        } else { //if not spawned...
+            spawner.run(dt);
+        }
+
         for (Bomb bomb : bombs) {
             if (bomb.isUsed())
                 bombsDeployed--;
@@ -257,13 +280,13 @@ public class Player implements InputProcessor{
     private boolean getWallColliding() {
         TiledMapTileLayer walls = (TiledMapTileLayer) map.getLayers().get("Walls");
         TiledMapTileLayer explodable = (TiledMapTileLayer) map.getLayers().get("Explodable");
-        Rectangle rectangleMapObject = new Rectangle(0, 0, MaddBomber.TILE_SIZE, MaddBomber.TILE_SIZE);
+        Rectangle rectangleMapObject = new Rectangle(0, 0, TILE_SIZE, TILE_SIZE);
 
         for (int tx = 0; tx < mapTileWidth; tx++) {
             for (int ty = 0; ty < mapTileHeight; ty++) {
                 if (walls.getCell(tx, ty) != null || explodable.getCell(tx, ty) != null) {
-                    rectangleMapObject.setX(tx * MaddBomber.TILE_SIZE);
-                    rectangleMapObject.setY(ty * MaddBomber.TILE_SIZE);
+                    rectangleMapObject.setX(tx * TILE_SIZE);
+                    rectangleMapObject.setY(ty * TILE_SIZE);
 
                     if (Intersector.overlaps(hitbox, rectangleMapObject))
                         return true;
@@ -289,8 +312,25 @@ public class Player implements InputProcessor{
         }
     }
 
+    private void checkExplosionCollision() {
+        for (int i = 0; i < gameWorld.getExplosions().size(); i++) {
+            if (hitbox.overlaps(gameWorld.getExplosions().get(i).getHitbox())) {
+                kill(gameWorld.getExplosions().get(i).getOwner(), "Killed from explosion");
+            }
+        }
+    }
+
+    private void checkPickupCollision() {
+        for (int i = 0; i < gameWorld.getPickups().size(); i++) {
+            if (hitbox.overlaps(gameWorld.getPickups().get(i).getHitbox())) {
+                gameWorld.getPickups().get(i).use(this);
+            }
+        }
+    }
+
     public void draw(SpriteBatch batch) {
-        sprite.draw(batch);
+        if (spawned)
+            sprite.draw(batch);
     }
 
     public void addBombToIgnore(Bomb bomb) {
@@ -308,8 +348,8 @@ public class Player implements InputProcessor{
 
     private void createBomb() {
         if (bombsDeployed < maxDeployedBombs) {
-            int tileX = (int) (x / MaddBomber.TILE_SIZE);
-            int tileY = (int) (y / MaddBomber.TILE_SIZE);
+            int tileX = (int) (x / TILE_SIZE);
+            int tileY = (int) (y / TILE_SIZE);
 
             //Check if there is already a bomb on this tile
             boolean bombExists = false;
@@ -327,5 +367,9 @@ public class Player implements InputProcessor{
                 bombsDeployed++;
             }
         }
+    }
+
+    public void increaseSpeedByFactor(double v) {
+        maxSpeedCurrent *= v;
     }
 }

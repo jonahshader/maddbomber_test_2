@@ -28,12 +28,13 @@ public class Match implements Disposable{
     private OrthogonalTiledMapRenderer mapRenderer;
 
     //TODO: put more stuff in this constructor, like a ControlProfile array, map, playerTexture array, etc.
-    public Match(MaddBomber game, int playerCount) {
+    public Match(MaddBomber game, int playerCount, String mapFileName) {
         this.game = game;
         this.playerCount = playerCount;
         gameCam = new OrthographicCamera();
         hud = new Hud(game.batch);
-        gameWorld = new GameWorld("Maps/Sandstone.tmx");
+//        gameWorld = new GameWorld("Maps/Sandstone.tmx");
+        gameWorld = new GameWorld(mapFileName);
         gamePort = new FitViewport(gameWorld.getMapProperties().get("width", Integer.class) * MaddBomber.TILE_SIZE, gameWorld.getMapProperties().get("height", Integer.class) * MaddBomber.TILE_SIZE, gameCam);
         mapRenderer = new OrthogonalTiledMapRenderer(gameWorld.getMap());
         gameCam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);

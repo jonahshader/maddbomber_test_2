@@ -3,6 +3,7 @@ package com.jonahshader.maddbomber;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.Disposable;
 import com.jonahshader.maddbomber.GameItems.Bomb;
@@ -43,9 +44,12 @@ public class GameWorld implements Disposable {
         for (Explosion explosion : explosions) {
             explosion.run(deltaTime);
         }
+        for (Pickup pickup : pickups) {
+            //TODO: pickup run method deduce lifespan and remove if lifespan <= 0
+        }
         explosions.removeIf(Explosion::isUsed);
         bombs.removeIf(Bomb::isUsed);
-        //TODO: update other stuff
+        pickups.removeIf(Pickup::isUsed);
     }
 
     public void draw(SpriteBatch batch) {
@@ -59,6 +63,10 @@ public class GameWorld implements Disposable {
 
         for (Explosion explosion : explosions) {
             explosion.draw(batch);
+        }
+
+        for (Pickup pickup : pickups) {
+            pickup.draw(batch);
         }
     }
 
@@ -91,6 +99,22 @@ public class GameWorld implements Disposable {
 
     public ArrayList<Player> getPlayers() {
         return players;
+    }
+
+    public static boolean[][] getCollidables(TiledMap map) {
+        TiledMapTileLayer walls = (TiledMapTileLayer) map.getLayers().get("Walls");
+        TiledMapTileLayer explodable = (TiledMapTileLayer) map.getLayers().get("Explodable");
+        int width = map.getProperties().get("width", Integer.class);
+        int height = map.getProperties().get("height", Integer.class);
+        boolean[][] collidables = new boolean[width][height];
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                collidables[x][y] = walls.getCell(x, y) != null || explodable.getCell(x, y) != null;
+            }
+        }
+
+        return collidables;
     }
 
     @Override

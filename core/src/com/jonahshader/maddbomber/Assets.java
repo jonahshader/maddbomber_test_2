@@ -15,7 +15,7 @@ public class Assets {
     public final String fuse = "Sounds/wick light.mp3";
     public final String explosion = "Sounds/explosion.mp3";
     //Fonts
-    public final String loadingFont = "Fonts/visitor/visitor1.ttf";
+//    public final String loadingFont = "Fonts/visitor/visitor1.ttf";
 
     public Assets() {
     }

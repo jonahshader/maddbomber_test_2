@@ -10,12 +10,11 @@ public class PlayScreen implements Screen {
 
     public PlayScreen(MaddBomber game) {
         this.game = game;
-        match = new Match(game, 1);
+        match = new Match(game, 1, "Maps/Sandstone.tmx");
     }
 
     @Override
     public void show() {
-
     }
 
     @Override
@@ -34,12 +33,10 @@ public class PlayScreen implements Screen {
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-
     }
 
     @Override

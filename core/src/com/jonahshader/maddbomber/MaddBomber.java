@@ -1,6 +1,7 @@
 package com.jonahshader.maddbomber;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.jonahshader.maddbomber.Screens.PlayScreen;
 
@@ -30,7 +31,6 @@ public class MaddBomber extends Game {
 			if (assets.manager.getProgress() != progress) {
 				progress = assets.manager.getProgress();
 				System.out.println(progress * 100 + "%");
-
 			}
 		}
 

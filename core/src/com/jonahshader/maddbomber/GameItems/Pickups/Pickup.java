@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.jonahshader.maddbomber.MaddBomber;
+import com.jonahshader.maddbomber.Player;
 
 
 public class Pickup {
@@ -18,6 +19,7 @@ public class Pickup {
     private PickupType type;
     private TextureRegion texture;
     private Rectangle hitbox;
+    private boolean isUsed = false;
 
     public Pickup(int tileX, int tileY, PickupType type, TextureAtlas itemAtlas) {
         this.tileX = tileX;
@@ -47,5 +49,22 @@ public class Pickup {
 
     public PickupType getType() {
         return type;
+    }
+
+    public void use(Player user) {
+        switch (type) {
+            case BOMB_COUNT_INCREASE:
+                break;
+            case EXPLOSION_SIZE_INCREASE:
+                break;
+            case SPEED_INCREASE:
+                user.increaseSpeedByFactor(1.25);
+                break;
+        }
+        isUsed = true;
+    }
+
+    public boolean isUsed() {
+        return isUsed;
     }
 }

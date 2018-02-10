@@ -5,12 +5,18 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
+import com.jonahshader.maddbomber.GameItems.Pickups.Pickup;
 import com.jonahshader.maddbomber.GameWorld;
 import com.jonahshader.maddbomber.MaddBomber;
 import com.jonahshader.maddbomber.Player;
 
 public class Explosion {
     final static float EXPLOSION_TIME = 0.8f;
+
+    public Player getOwner() {
+        return owner;
+    }
+
     public enum Direction {
         LEFT,
         RIGHT,
@@ -28,6 +34,7 @@ public class Explosion {
     private GameWorld gameWorld;
     private boolean hitExplodable;
     private boolean used = false;
+    private TextureAtlas itemAtlas;
 
     public Explosion(int tileX, int tileY, int explosionsRemaining, Direction direction, TextureAtlas itemAtlas, Player owner, GameWorld gameWorld) {
         this.tileX = tileX;
@@ -35,6 +42,7 @@ public class Explosion {
         this.direction = direction;
         this.owner = owner;
         this.gameWorld = gameWorld;
+        this.itemAtlas = itemAtlas;
         explosionTime = EXPLOSION_TIME;
 
         hitbox = new Rectangle(tileX * MaddBomber.TILE_SIZE, tileY * MaddBomber.TILE_SIZE, MaddBomber.TILE_SIZE, MaddBomber.TILE_SIZE);
@@ -104,6 +112,10 @@ public class Explosion {
         return used;
     }
 
+    public Rectangle getHitbox() {
+        return hitbox;
+    }
+
     public int getTileX() {
         return tileX;
     }
@@ -116,7 +128,8 @@ public class Explosion {
         //10% chance of spawning an item
         if (Math.random() < 0.1) {
             //spawn something
-
+            gameWorld.getPickups().add(new Pickup(tileX, tileY, Pickup.PickupType.SPEED_INCREASE, itemAtlas));
+            System.out.println("Pickup spawned!");
         }
     }
 }
