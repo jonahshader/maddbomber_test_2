@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="16" height="8" tilewidth="32" tileheight="32" nextobjectid="38">
+ <tileset firstgid="1" name="sandstone_tileset" tilewidth="32" tileheight="32" spacing="2" margin="1" tilecount="4" columns="3">
+  <image source="../Spritesheets/sandstone_spritesheet.png" width="128" height="64"/>
+ </tileset>
+ <tileset firstgid="5" name="items_tileset" tilewidth="32" tileheight="32" spacing="2" margin="1" tilecount="7" columns="7">
+  <image source="../Spritesheets/non_tile_spritesheet.png" width="256" height="64"/>
+ </tileset>
+ <tileset firstgid="12" name="all_map_tileset" tilewidth="32" tileheight="32" spacing="2" margin="1" tilecount="7" columns="7">
+  <image source="../Spritesheets/map_multiuse_spreadsheet.png" width="256" height="64"/>
+ </tileset>
+ <layer name="Void" width="16" height="8">
+  <data encoding="base64" compression="zlib">
+   eJwTYGBgEBjFIxYDABJ4CAE=
+  </data>
+ </layer>
+ <layer name="Background" width="16" height="8">
+  <data encoding="base64" compression="zlib">
+   eJxjYmBgYBrFIxYDAAQPAQE=
+  </data>
+ </layer>
+ <layer name="Explodable" width="16" height="8">
+  <data encoding="base64" compression="zlib">
+   eJxjYKAuYETC6HxGXJpw6GNAY+MyB5d9hNxELf2Uuh+XOaToIxcAADRkADM=
+  </data>
+ </layer>
+ <layer name="Walls" width="16" height="8">
+  <data encoding="base64" compression="zlib">
+   eJxjZmBgYKYQwwAyGxsfXQxdP7oaZjQ2NnX47McG8NlPqX50NdRwP74wpTTeQBgAvXQAuw==
+  </data>
+ </layer>
+ <layer name="Items" width="16" height="8">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFIxkAAAIAAAE=
+  </data>
+ </layer>
+ <objectgroup name="Players">
+  <object id="31" name="P1" gid="12" x="32" y="64" width="32" height="32"/>
+  <object id="34" name="P2" gid="13" x="448" y="224" width="32" height="32"/>
+  <object id="35" name="P3" gid="14" x="448" y="64" width="32" height="32"/>
+  <object id="36" name="P4" gid="15" x="32" y="224" width="32" height="32"/>
+ </objectgroup>
+</map>
