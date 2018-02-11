@@ -14,6 +14,7 @@ public class Assets {
     //Sounds
     public final String fuse = "Sounds/wick light.mp3";
     public final String explosion = "Sounds/explosion.mp3";
+    public final String death = "Sounds/death.mp3";
     //Fonts
 //    public final String loadingFont = "Fonts/visitor/visitor1.ttf";
 
@@ -24,6 +25,7 @@ public class Assets {
         manager.load(itemAtlas, TextureAtlas.class);
         manager.load(fuse, Sound.class);
         manager.load(explosion, Sound.class);
+        manager.load(death, Sound.class);
 //        manager.load(loadingFont, BitmapFont.class);
     }
 

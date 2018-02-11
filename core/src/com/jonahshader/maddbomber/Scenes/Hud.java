@@ -28,14 +28,6 @@ public class Hud {
     Label timeRemainingLabel;
     Label stageLabel;
 
-    Label player1labelValue;
-    Label player2labelValue;
-    Label player3labelValue;
-    Label player4labelValue;
-
-    Label timeRemainingLabelValue;
-    Label stageLabelValue;
-
     public Hud(SpriteBatch batch) {
         player1Score = 0;
         player2Score = 0;
@@ -66,8 +58,32 @@ public class Hud {
         table.add(timeRemainingLabel).expandX().padTop(2);
 
         stage.addActor(table);
-
-
     }
 
+    public void updateLables() {
+        player1label.setText("Player 1 Score: " + player1Score);
+        player2label.setText("Player 2 Score: " + player2Score);
+        player3label.setText("Player 3 Score: " + player3Score);
+        player4label.setText("Player 4 Score: " + player4Score);
+    }
+
+    public void setPlayer1Score(Integer player1Score) {
+        this.player1Score = player1Score;
+    }
+
+    public void setPlayer2Score(Integer player2Score) {
+        this.player2Score = player2Score;
+    }
+
+    public void setPlayer3Score(Integer player3Score) {
+        this.player3Score = player3Score;
+    }
+
+    public void setPlayer4Score(Integer player4Score) {
+        this.player4Score = player4Score;
+    }
+
+    public void setTimeRemaining(Double timeRemaining) {
+        this.timeRemaining = timeRemaining;
+    }
 }

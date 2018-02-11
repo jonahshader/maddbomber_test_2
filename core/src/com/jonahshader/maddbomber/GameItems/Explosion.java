@@ -11,7 +11,7 @@ import com.jonahshader.maddbomber.MaddBomber;
 import com.jonahshader.maddbomber.Player;
 
 public class Explosion {
-    final static float EXPLOSION_TIME = 0.8f;
+    final static float EXPLOSION_TIME = 0.6f;
 
     public Player getOwner() {
         return owner;

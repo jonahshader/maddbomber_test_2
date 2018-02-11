@@ -1,6 +1,7 @@
 package com.jonahshader.maddbomber;
 
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -19,16 +20,17 @@ import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
 
 public class Player implements InputProcessor{
     final static double SPEED_MAX = 7; // 1 tile per second
-    final static double FRICTION_REGULAR = 15;
+    final static double FRICTION_REGULAR = 20;
     //Center of player sprite
     //in world pixels (probably 32 pixels per tile)
     private double x, y, xSpeed, ySpeed;
     private double maxSpeedCurrent = 2.0;
-    private double width = 28;
-    private double height = 28;
+    private double width = 26;
+    private double height = 26;
     private int bombsDeployed = 0;
     private int maxDeployedBombs;
     private int explosionSize;
+    private int score = 0;
 
     private Sprite sprite;
     private TextureAtlas itemAtlas;
@@ -159,7 +161,14 @@ public class Player implements InputProcessor{
     public void kill(Player killer, String cause) {
         spawned = false;
         spawner.requestRespawn();
+        if (killer == this) {
+            killer.givePoints(-1); // you killed your self... -1 point
+        } else {
+            killer.givePoints(1);
+        }
+
         System.out.println(cause);
+        game.assets.manager.get(game.assets.death, Sound.class).play(0.27f);
     }
 
     public void respawn(int spawnTileX, int spawnTileY) {
@@ -347,7 +356,7 @@ public class Player implements InputProcessor{
     }
 
     private void createBomb() {
-        if (bombsDeployed < maxDeployedBombs) {
+        if (bombsDeployed < maxDeployedBombs && spawned) {
             int tileX = (int) (x / TILE_SIZE);
             int tileY = (int) (y / TILE_SIZE);
 
@@ -371,5 +380,13 @@ public class Player implements InputProcessor{
 
     public void increaseSpeedByFactor(double v) {
         maxSpeedCurrent *= v;
+    }
+
+    public void givePoints(int pointsToAdd) {
+        score += pointsToAdd;
+    }
+
+    public int getScore() {
+        return score;
     }
 }

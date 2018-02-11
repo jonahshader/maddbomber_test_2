@@ -67,6 +67,26 @@ public class Match implements Disposable{
         gameWorld.update(dt);
         gameCam.update();
         mapRenderer.setView(gameCam);
+        hud.updateLables();
+
+        for (int i = 0; i < gameWorld.getPlayers().size(); i++) {
+            switch (i){
+                case 0:
+                    hud.setPlayer1Score(gameWorld.getPlayers().get(i).getScore());
+                    break;
+                case 1:
+                    hud.setPlayer2Score(gameWorld.getPlayers().get(i).getScore());
+                    break;
+                case 2:
+                    hud.setPlayer3Score(gameWorld.getPlayers().get(i).getScore());
+                    break;
+                case 3:
+                    hud.setPlayer4Score(gameWorld.getPlayers().get(i).getScore());
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     public void render(float delta) {
