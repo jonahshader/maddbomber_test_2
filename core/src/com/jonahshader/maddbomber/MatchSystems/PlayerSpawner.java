@@ -40,16 +40,7 @@ public class PlayerSpawner {
     }
 
     private void spawnPlayer() {
-        boolean[][] spawnableArea = GameWorld.getCollidables(gameWorld.getMap());
-        ArrayList<Point> spawnableLocations = new ArrayList<>();
-
-        for (int x = 0; x < spawnableArea.length; x++) {
-            for (int y = 0; y < spawnableArea[0].length; y++) {
-                if (!spawnableArea[x][y]) {
-                    spawnableLocations.add(new Point(x, y));
-                }
-            }
-        }
+        ArrayList<Point> spawnableLocations = GameWorld.getWalkableSpace(gameWorld.getMap());
         Point selectedLocation = spawnableLocations.get((int) (Math.random() * spawnableLocations.size()));
         parentPlayer.respawn(selectedLocation.x, selectedLocation.y);
     }

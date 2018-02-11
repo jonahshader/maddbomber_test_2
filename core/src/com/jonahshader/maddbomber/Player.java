@@ -18,13 +18,12 @@ import java.util.ArrayList;
 
 import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
 
-public class Player implements InputProcessor{
-    final static double SPEED_MAX = 7; // 1 tile per second
+public class Player implements InputProcessor {
     final static double FRICTION_REGULAR = 20;
     //Center of player sprite
     //in world pixels (probably 32 pixels per tile)
     private double x, y, xSpeed, ySpeed;
-    private double maxSpeedCurrent = 2.0;
+    private double maxSpeedCurrent;
     private double width = 26;
     private double height = 26;
     private int bombsDeployed = 0;
@@ -60,8 +59,7 @@ public class Player implements InputProcessor{
         TextureRegion tr = new TextureRegion(itemAtlas.findRegion("player"));
         spawner = new PlayerSpawner(gameWorld, this);
         prop = map.getProperties();
-        maxDeployedBombs = 2;
-        explosionSize = 2;
+        resetStats();
         bombs = new ArrayList<>();
         bombsIgnored = new ArrayList<>();
 
@@ -75,6 +73,15 @@ public class Player implements InputProcessor{
         sprite = new Sprite(tr);
         sprite.setCenterX((float) x);
         sprite.setCenterY((float) y);
+    }
+
+    public static double limit(double value, double lower, double higher) {
+        if (value > higher) {
+            value = higher;
+        } else if (value < lower) {
+            value = lower;
+        }
+        return value;
     }
 
     @Override
@@ -159,14 +166,15 @@ public class Player implements InputProcessor{
     }
 
     public void kill(Player killer, String cause) {
-        spawned = false;
         spawner.requestRespawn();
-        if (killer == this) {
-            killer.givePoints(-1); // you killed your self... -1 point
-        } else {
-            killer.givePoints(1);
-        }
-
+        if (spawned)
+            if (killer == this) {
+                killer.givePoints(-1); // you killed your self... -1 point
+            } else {
+                killer.givePoints(1);
+            }
+        resetStats();
+        spawned = false;
         System.out.println(cause);
         game.assets.manager.get(game.assets.death, Sound.class).play(0.27f);
     }
@@ -235,24 +243,24 @@ public class Player implements InputProcessor{
             sprite.setRotation((float) (180.0 * Math.atan2(ySpeed, xSpeed) / Math.PI) - 90);
         }
 
-        hitbox.setX((float) (x - (width/2)));
-        hitbox.setY((float) (y - (height/2)));
+        hitbox.setX((float) (x - (width / 2)));
+        hitbox.setY((float) (y - (height / 2)));
 
         if (getWallColliding()) {
             double newX = x;
             double newY = y;
             x = px;
-            hitbox.setX((float) (x - (width/2)));
+            hitbox.setX((float) (x - (width / 2)));
             if (getWallColliding()) {
                 x = newX;
                 y = py;
-                hitbox.setX((float) (x - (width/2)));
-                hitbox.setY((float) (y - (height/2)));
+                hitbox.setX((float) (x - (width / 2)));
+                hitbox.setY((float) (y - (height / 2)));
                 if (getWallColliding()) {
                     x = px;
                     y = py;
-                    hitbox.setX((float) (x - (width/2)));
-                    hitbox.setY((float) (y - (height/2)));
+                    hitbox.setX((float) (x - (width / 2)));
+                    hitbox.setY((float) (y - (height / 2)));
                     xSpeed = 0;
                     ySpeed = 0;
                 } else {
@@ -337,6 +345,12 @@ public class Player implements InputProcessor{
         }
     }
 
+    private void resetStats() {
+        maxSpeedCurrent = 2;
+        maxDeployedBombs = 2;
+        explosionSize = 2;
+    }
+
     public void draw(SpriteBatch batch) {
         if (spawned)
             sprite.draw(batch);
@@ -344,15 +358,6 @@ public class Player implements InputProcessor{
 
     public void addBombToIgnore(Bomb bomb) {
         bombsIgnored.add(bomb);
-    }
-
-    public static double limit(double value, double lower, double higher) {
-        if (value > higher) {
-            value = higher;
-        } else if (value < lower) {
-            value = lower;
-        }
-        return value;
     }
 
     private void createBomb() {

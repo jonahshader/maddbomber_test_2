@@ -77,7 +77,7 @@ public class Bomb {
 
     private void explode() {
         //create fire cellular automata
-        gameWorld.getExplosions().add(new Explosion(tileX, tileY, explosionSize, Explosion.Direction.ALL, itemAtlas, owner, gameWorld));
+        gameWorld.getExplosions().add(new Explosion(tileX, tileY, explosionSize, Explosion.Direction.ALL, game, owner, gameWorld));
         game.assets.manager.get(game.assets.fuse, Sound.class).stop(soundId);
         game.assets.manager.get(game.assets.explosion, Sound.class).play(0.17f);
         used = true;

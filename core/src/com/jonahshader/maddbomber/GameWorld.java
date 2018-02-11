@@ -10,6 +10,7 @@ import com.jonahshader.maddbomber.GameItems.Bomb;
 import com.jonahshader.maddbomber.GameItems.Explosion;
 import com.jonahshader.maddbomber.GameItems.Pickups.Pickup;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class GameWorld implements Disposable {
@@ -45,7 +46,7 @@ public class GameWorld implements Disposable {
             explosion.run(deltaTime);
         }
         for (Pickup pickup : pickups) {
-            //TODO: pickup run method deduce lifespan and remove if lifespan <= 0
+            pickup.run(deltaTime);
         }
         explosions.removeIf(Explosion::isUsed);
         bombs.removeIf(Bomb::isUsed);
@@ -115,6 +116,20 @@ public class GameWorld implements Disposable {
         }
 
         return collidables;
+    }
+
+    public static ArrayList<Point> getWalkableSpace(TiledMap map) {
+        boolean[][] spawnableArea = GameWorld.getCollidables(map);
+        ArrayList<Point> spawnableLocations = new ArrayList<>();
+
+        for (int x = 0; x < spawnableArea.length; x++) {
+            for (int y = 0; y < spawnableArea[0].length; y++) {
+                if (!spawnableArea[x][y]) {
+                    spawnableLocations.add(new Point(x, y));
+                }
+            }
+        }
+        return spawnableLocations;
     }
 
     @Override

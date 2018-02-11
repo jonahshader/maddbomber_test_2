@@ -35,18 +35,19 @@ public class Explosion {
     private boolean hitExplodable;
     private boolean used = false;
     private TextureAtlas itemAtlas;
+    private MaddBomber game;
 
-    public Explosion(int tileX, int tileY, int explosionsRemaining, Direction direction, TextureAtlas itemAtlas, Player owner, GameWorld gameWorld) {
+    public Explosion(int tileX, int tileY, int explosionsRemaining, Direction direction, MaddBomber game, Player owner, GameWorld gameWorld) {
         this.tileX = tileX;
         this.tileY = tileY;
         this.direction = direction;
         this.owner = owner;
         this.gameWorld = gameWorld;
-        this.itemAtlas = itemAtlas;
+        this.game = game;
         explosionTime = EXPLOSION_TIME;
 
         hitbox = new Rectangle(tileX * MaddBomber.TILE_SIZE, tileY * MaddBomber.TILE_SIZE, MaddBomber.TILE_SIZE, MaddBomber.TILE_SIZE);
-        texture = itemAtlas.findRegion("fire");
+        texture = game.assets.manager.get(game.assets.itemAtlas, TextureAtlas.class).findRegion("fire");
 
         TiledMapTileLayer explodables = (TiledMapTileLayer) gameWorld.getMap().getLayers().get("Explodable");
         TiledMapTileLayer walls = (TiledMapTileLayer) gameWorld.getMap().getLayers().get("Walls");
@@ -59,31 +60,31 @@ public class Explosion {
                 switch (direction) {
                     case LEFT:
                         if (walls.getCell(tileX - 1, tileY) == null) {
-                            gameWorld.getExplosions().add(new Explosion(tileX - 1, tileY, explosionsRemaining - 1, direction, itemAtlas, owner, gameWorld));
+                            gameWorld.getExplosions().add(new Explosion(tileX - 1, tileY, explosionsRemaining - 1, direction, game, owner, gameWorld));
                         }
                         break;
                     case RIGHT:
                         if (walls.getCell(tileX + 1, tileY) == null) {
-                            gameWorld.getExplosions().add(new Explosion(tileX + 1, tileY, explosionsRemaining - 1, direction, itemAtlas, owner, gameWorld));
+                            gameWorld.getExplosions().add(new Explosion(tileX + 1, tileY, explosionsRemaining - 1, direction, game, owner, gameWorld));
                         }
                         break;
                     case UP:
                         if (walls.getCell(tileX, tileY + 1) == null)
-                            gameWorld.getExplosions().add(new Explosion(tileX, tileY + 1, explosionsRemaining - 1, direction, itemAtlas, owner, gameWorld));
+                            gameWorld.getExplosions().add(new Explosion(tileX, tileY + 1, explosionsRemaining - 1, direction, game, owner, gameWorld));
                         break;
                     case DOWN:
                         if (walls.getCell(tileX, tileY - 1) == null)
-                            gameWorld.getExplosions().add(new Explosion(tileX, tileY - 1, explosionsRemaining - 1, direction, itemAtlas, owner, gameWorld));
+                            gameWorld.getExplosions().add(new Explosion(tileX, tileY - 1, explosionsRemaining - 1, direction, game, owner, gameWorld));
                         break;
                     case ALL:
                         if (walls.getCell(tileX - 1, tileY) == null)
-                            gameWorld.getExplosions().add(new Explosion(tileX - 1, tileY, explosionsRemaining - 1, Direction.LEFT, itemAtlas, owner, gameWorld));
+                            gameWorld.getExplosions().add(new Explosion(tileX - 1, tileY, explosionsRemaining - 1, Direction.LEFT, game, owner, gameWorld));
                         if (walls.getCell(tileX + 1, tileY) == null)
-                            gameWorld.getExplosions().add(new Explosion(tileX + 1, tileY, explosionsRemaining - 1, Direction.RIGHT, itemAtlas, owner, gameWorld));
+                            gameWorld.getExplosions().add(new Explosion(tileX + 1, tileY, explosionsRemaining - 1, Direction.RIGHT, game, owner, gameWorld));
                         if (walls.getCell(tileX, tileY + 1) == null)
-                            gameWorld.getExplosions().add(new Explosion(tileX, tileY + 1, explosionsRemaining - 1, Direction.UP, itemAtlas, owner, gameWorld));
+                            gameWorld.getExplosions().add(new Explosion(tileX, tileY + 1, explosionsRemaining - 1, Direction.UP, game, owner, gameWorld));
                         if (walls.getCell(tileX, tileY - 1) == null)
-                            gameWorld.getExplosions().add(new Explosion(tileX, tileY - 1, explosionsRemaining - 1, Direction.DOWN, itemAtlas, owner, gameWorld));
+                            gameWorld.getExplosions().add(new Explosion(tileX, tileY - 1, explosionsRemaining - 1, Direction.DOWN, game, owner, gameWorld));
                         break;
                 }
             }
@@ -128,7 +129,7 @@ public class Explosion {
         //10% chance of spawning an item
         if (Math.random() < 0.1) {
             //spawn something
-            gameWorld.getPickups().add(new Pickup(tileX, tileY, Pickup.PickupType.SPEED_INCREASE, itemAtlas));
+            gameWorld.getPickups().add(new Pickup(tileX, tileY, Pickup.PickupType.SPEED_INCREASE, game));
             System.out.println("Pickup spawned!");
         }
     }

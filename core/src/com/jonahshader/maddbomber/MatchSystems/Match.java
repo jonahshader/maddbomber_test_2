@@ -9,10 +9,14 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.jonahshader.maddbomber.GameItems.Pickups.Pickup;
 import com.jonahshader.maddbomber.GameWorld;
 import com.jonahshader.maddbomber.MaddBomber;
 import com.jonahshader.maddbomber.Player;
 import com.jonahshader.maddbomber.Scenes.Hud;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 public class Match implements Disposable{
     //Game systems stuff
@@ -68,25 +72,8 @@ public class Match implements Disposable{
         gameCam.update();
         mapRenderer.setView(gameCam);
         hud.updateLables();
-
-        for (int i = 0; i < gameWorld.getPlayers().size(); i++) {
-            switch (i){
-                case 0:
-                    hud.setPlayer1Score(gameWorld.getPlayers().get(i).getScore());
-                    break;
-                case 1:
-                    hud.setPlayer2Score(gameWorld.getPlayers().get(i).getScore());
-                    break;
-                case 2:
-                    hud.setPlayer3Score(gameWorld.getPlayers().get(i).getScore());
-                    break;
-                case 3:
-                    hud.setPlayer4Score(gameWorld.getPlayers().get(i).getScore());
-                    break;
-                default:
-                    break;
-            }
-        }
+        updateScores();
+        itemSpawner(dt);
     }
 
     public void render(float delta) {
@@ -121,6 +108,35 @@ public class Match implements Disposable{
 
     private Vector3 getMousePosInGameWorld() {
         return gamePort.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+    }
+
+    private void updateScores() {
+        for (int i = 0; i < gameWorld.getPlayers().size(); i++) {
+            switch (i){
+                case 0:
+                    hud.setPlayer1Score(gameWorld.getPlayers().get(i).getScore());
+                    break;
+                case 1:
+                    hud.setPlayer2Score(gameWorld.getPlayers().get(i).getScore());
+                    break;
+                case 2:
+                    hud.setPlayer3Score(gameWorld.getPlayers().get(i).getScore());
+                    break;
+                case 3:
+                    hud.setPlayer4Score(gameWorld.getPlayers().get(i).getScore());
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void itemSpawner(float dt) {
+        if (Math.random() < 0.1 * dt) {
+            ArrayList<Point> pickupSpawnCanidates = GameWorld.getWalkableSpace(gameWorld.getMap());
+            Point selectedLocation = pickupSpawnCanidates.get((int) (Math.random() * pickupSpawnCanidates.size()));
+            gameWorld.getPickups().add(new Pickup(selectedLocation.x, selectedLocation.y, Pickup.PickupType.SPEED_INCREASE, game));
+        }
     }
 
     @Override
