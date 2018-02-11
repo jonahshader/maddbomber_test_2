@@ -80,4 +80,12 @@ public class Pickup {
     public boolean isUsed() {
         return isUsed;
     }
+
+    public int getTileX() {
+        return tileX;
+    }
+
+    public int getTileY() {
+        return tileY;
+    }
 }

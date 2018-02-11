@@ -22,7 +22,7 @@ public class Player implements InputProcessor {
     final static double FRICTION_REGULAR = 20;
     //Center of player sprite
     //in world pixels (probably 32 pixels per tile)
-    private double x, y, xSpeed, ySpeed;
+    protected double x, y, xSpeed, ySpeed;
     private double maxSpeedCurrent;
     private double width = 26;
     private double height = 26;
@@ -36,21 +36,23 @@ public class Player implements InputProcessor {
     private Rectangle hitbox;
     private TiledMap map;
     private MapProperties prop;
-    private GameWorld gameWorld;
-    private MaddBomber game;
+    protected GameWorld gameWorld;
+    protected MaddBomber game;
     private PlayerSpawner spawner;
     private int mapTileWidth;
     private int mapTileHeight;
     private boolean spawned = true;
+    private int playerId;
 
     private ArrayList<Bomb> bombs;
     private ArrayList<Bomb> bombsIgnored; //bombs are put into here until the player moves off of them
 
     //controls
     private ControlProfile controlProfile;
-    private boolean upKeyDown, downKeyDown, leftKeyDown, rightKeyDown, placeKeyDown, activateKeyDown;
+    protected boolean upKeyDown, downKeyDown, leftKeyDown, rightKeyDown, placeKeyDown, activateKeyDown;
 
     public Player(int tileX, int tileY, ControlProfile controlProfile, GameWorld gameWorld, MaddBomber game, int playerId) {
+        this.playerId = playerId;
         this.controlProfile = controlProfile;
         this.map = gameWorld.getMap();
         this.itemAtlas = game.assets.manager.get(game.assets.itemAtlas, TextureAtlas.class);
@@ -360,7 +362,7 @@ public class Player implements InputProcessor {
         bombsIgnored.add(bomb);
     }
 
-    private void createBomb() {
+    protected void createBomb() {
         if (bombsDeployed < maxDeployedBombs && spawned) {
             int tileX = (int) (x / TILE_SIZE);
             int tileY = (int) (y / TILE_SIZE);
@@ -393,5 +395,13 @@ public class Player implements InputProcessor {
 
     public int getScore() {
         return score;
+    }
+
+    public boolean isSpawned() {
+        return spawned;
+    }
+
+    public int getBombsDeployed() {
+        return bombsDeployed;
     }
 }

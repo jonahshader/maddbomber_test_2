@@ -10,7 +10,7 @@ import com.jonahshader.maddbomber.MaddBomber;
 import com.jonahshader.maddbomber.Player;
 
 public class Bomb {
-    final static float FUSE_TIME_MAX = 1.7f; //starting time for explosion timer
+    public final static float FUSE_TIME_MAX = 1.7f; //starting time for explosion timer
 
     private float timeRemaining;
     private int tileX, tileY;

@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.jonahshader.maddbomber.AIPlayer;
 import com.jonahshader.maddbomber.GameItems.Pickups.Pickup;
 import com.jonahshader.maddbomber.GameWorld;
 import com.jonahshader.maddbomber.MaddBomber;
@@ -48,7 +49,7 @@ public class Match implements Disposable{
         Gdx.input.setInputProcessor(multiplexer);
 
         //temp: add a player to the map
-        addPlayer(new Player(
+        addPlayer(new AIPlayer(
                 1,
                 1,
                 game.controls.getControlProfile(0),
@@ -56,9 +57,9 @@ public class Match implements Disposable{
                 game,
                 0));
 
-        addPlayer(new Player(
-                2,
-                1,
+        addPlayer(new AIPlayer(
+                14,
+                6,
                 game.controls.getControlProfile(1),
                 gameWorld,
                 game,
