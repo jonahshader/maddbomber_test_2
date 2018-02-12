@@ -19,13 +19,16 @@ import java.util.ArrayList;
 import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
 
 public class Player implements InputProcessor {
+
     final static double FRICTION_REGULAR = 20;
     //Center of player sprite
     //in world pixels (probably 32 pixels per tile)
     protected double x, y, xSpeed, ySpeed;
     private double maxSpeedCurrent;
-    private double width = 26;
-    private double height = 26;
+    private static double width = 26;
+    private static double height = 26;
+//    final static double MOVE_AUTO_CORRECT_THRESHOLD = (TILE_SIZE - width) / 2;
+    final static double MOVE_AUTO_CORRECT_THRESHOLD = 0;
     private int bombsDeployed = 0;
     private int maxDeployedBombs;
     private int explosionSize;
@@ -198,6 +201,146 @@ public class Player implements InputProcessor {
         tempXSpd += rightKeyDown ? 1 : 0;
         tempYSpd += upKeyDown ? 1 : 0;
         tempYSpd += downKeyDown ? -1 : 0;
+
+        int directionalKeysPressed = 0;
+        if (leftKeyDown) directionalKeysPressed++;
+        if (rightKeyDown) directionalKeysPressed++;
+        if (upKeyDown) directionalKeysPressed++;
+        if (downKeyDown) directionalKeysPressed++;
+
+        if (directionalKeysPressed == 1) {
+            boolean[][] movementKernel = new boolean[3][3];
+            boolean[][] collidables = GameWorld.getCollidables(map);
+
+            int tempTileX = (int) (x / TILE_SIZE);
+            int tempTileY = (int) (y / TILE_SIZE);
+
+            for (int kernelX = -1; kernelX < 2; kernelX++) {
+                for (int kernelY = -1; kernelY < 2; kernelY++) {
+                    int sampleX = tempTileX + kernelX;
+                    int sampleY = tempTileY + kernelY;
+                    if (sampleX >= 0 && sampleX < mapTileWidth && sampleY >= 0 && sampleY < mapTileHeight) {
+                        movementKernel[kernelX + 1][kernelY + 1] = collidables[sampleX][sampleY];
+                    } else {
+                        movementKernel[kernelX + 1][kernelY + 1] = true;
+                    }
+                }
+            }
+
+            double xBias = x - ((tempTileX * TILE_SIZE) + TILE_SIZE / 2);
+            double yBias = y - ((tempTileY * TILE_SIZE) + TILE_SIZE / 2);
+
+//            System.out.println("x bias: " + xBias);
+//            System.out.println("y bias: " + yBias);
+
+
+            if (leftKeyDown) {
+                if (movementKernel[0][1]) { //if the spot directly to the left of the player is solid...
+                    if (yBias > MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the upper half of the tile...
+                        if (!movementKernel[0][2]) { //if the block directly to the top left of the player is not solid...
+                            tempYSpd = 1; //move up (should already be moving left)
+                            System.out.println("correction upwards");
+                        }
+                    } else if (yBias < -MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the lower half of the tile...
+                        if (!movementKernel[0][0]) { //if the block directly to the bottom left of the player is not solid...
+                            tempYSpd = -1; //move down (should already be moving left)
+                            System.out.println("correction downwards");
+                        }
+                    }
+                }
+                if (!movementKernel[0][1]) { //left is clear
+                    if (movementKernel[0][2]) { //top left is solid
+                        if (yBias > MOVE_AUTO_CORRECT_THRESHOLD) { //leaning towards top
+                            tempYSpd = -1; //move down
+                        }
+                    }
+                    if (movementKernel[0][0]) { //bottom left is clear
+                        if (yBias < -MOVE_AUTO_CORRECT_THRESHOLD) { //leaning torwards bottom
+                            tempYSpd = 1; //move up
+                        }
+                    }
+                }
+
+            } else if (rightKeyDown) {
+                if (movementKernel[2][1]) { //if the spot directly to the right of the player is solid...
+                    if (yBias > MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the upper half of the tile...
+                        if (!movementKernel[2][2]) { //if the block directly to the top right of the player is not solid...
+                            tempYSpd = 1; //move up (should already be moving left)
+                            System.out.println("correction upwards");
+                        }
+                    } else if (yBias < -MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the lower half of the tile...
+                        if (!movementKernel[2][0]) { //if the block directly to the bottom right of the player is not solid...
+                            tempYSpd = -1; //move down (should already be moving left)
+                            System.out.println("correction downwards");
+                        }
+                    }
+                }
+                if (!movementKernel[2][1]) { //right is clear
+                    if (movementKernel[2][2]) { //top right is solid
+                        if (yBias > MOVE_AUTO_CORRECT_THRESHOLD) { //leaning towards top
+                            tempYSpd = -1; //move down
+                        }
+                    }
+                    if (movementKernel[2][0]) { //bottom right is clear
+                        if (yBias < -MOVE_AUTO_CORRECT_THRESHOLD) { //leaning torwards bottom
+                            tempYSpd = 1; //move up
+                        }
+                    }
+                }
+            } else if (upKeyDown) {
+                if (movementKernel[1][2]) { //if the spot directly to the top of the player is solid...
+                    if (xBias > MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the right half of the tile...
+                        if (!movementKernel[2][2]) { //if the block directly to the top right of the player is not solid...
+                            tempXSpd = 1; //move right (should already be moving up)
+                            System.out.println("correction right");
+                        }
+                    } else if (xBias < -MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the left half of the tile...
+                        if (!movementKernel[0][2]) { //if the block directly to the top left of the player is not solid...
+                            tempXSpd = -1; //move left (should already be moving up)
+                            System.out.println("correction left");
+                        }
+                    }
+                }
+                if (!movementKernel[1][2]) { //up is clear
+                    if (movementKernel[2][2]) { //top right is solid
+                        if (xBias > MOVE_AUTO_CORRECT_THRESHOLD) { //leaning towards right
+                            tempXSpd = -1; //move left
+                        }
+                    }
+                    if (movementKernel[0][2]) { //top left is clear
+                        if (xBias < -MOVE_AUTO_CORRECT_THRESHOLD) { //leaning towards right
+                            tempXSpd = 1; //move right
+                        }
+                    }
+                }
+            } else {
+                if (movementKernel[1][0]) { //if the spot directly to the bottom of the player is solid...
+                    if (xBias > MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the right half of the tile...
+                        if (!movementKernel[2][0]) { //if the block directly to the bottom right of the player is not solid...
+                            tempXSpd = 1; //move right (should already be moving up)
+                            System.out.println("correction right");
+                        }
+                    } else if (xBias < -MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the left half of the tile...
+                        if (!movementKernel[0][0]) { //if the block directly to the bottom left of the player is not solid...
+                            tempXSpd = -1; //move left (should already be moving up)
+                            System.out.println("correction left");
+                        }
+                    }
+                }
+                if (!movementKernel[1][0]) { //down is clear
+                    if (movementKernel[2][0]) { //bottom right is solid
+                        if (xBias > MOVE_AUTO_CORRECT_THRESHOLD) { //leaning towards right
+                            tempXSpd = -1; //move left
+                        }
+                    }
+                    if (movementKernel[0][0]) { //bottom left is clear
+                        if (xBias < -MOVE_AUTO_CORRECT_THRESHOLD) { //leaning towards right
+                            tempXSpd = 1; //move right
+                        }
+                    }
+                }
+            }
+        }
 
         //add temp speed from keyboard input to the player's actual speed
         xSpeed += tempXSpd * FRICTION_REGULAR * dt * 2;

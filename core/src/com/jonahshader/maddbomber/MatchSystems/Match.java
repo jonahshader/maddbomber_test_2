@@ -49,7 +49,7 @@ public class Match implements Disposable{
         Gdx.input.setInputProcessor(multiplexer);
 
         //temp: add a player to the map
-        addPlayer(new AIPlayer(
+        addPlayer(new Player(
                 1,
                 1,
                 game.controls.getControlProfile(0),

@@ -55,14 +55,24 @@ public class AIPlayer extends Player {
     }
 
     @Override
+    public void kill(Player killer, String cause) {
+        super.kill(killer, cause);
+        waitingPeriod = 0;
+    }
+
+    @Override
     public void run(float dt) {
         Player target = null;
         double lowestDistance = 999999999;
+        double xDist = 0;
+        double yDist = 0;
         for (Player player : gameWorld.getPlayers()) {
             if (player != this && player.isSpawned()) {
                 double distance = Math.sqrt(Math.pow(player.x - x, 2) + Math.pow(player.y - y, 2));
                 if (distance < lowestDistance) {
                     lowestDistance = distance;
+                    xDist = player.x - x;
+                    yDist = player.y - y;
                     target = player;
                 }
             }
@@ -71,11 +81,15 @@ public class AIPlayer extends Player {
         boolean pickupClosest = false;
         Pickup closestPickup = null;
         for (Pickup pickup : gameWorld.getPickups()) {
-            double distance = Math.sqrt(Math.pow(pickup.getTileX() * TILE_SIZE - x, 2) + Math.pow(pickup.getTileY() * TILE_SIZE - y, 2));
+            double pickupX = pickup.getTileX() * TILE_SIZE + (TILE_SIZE / 2);
+            double pickupY = pickup.getTileY() * TILE_SIZE + (TILE_SIZE / 2);
+            double distance = Math.sqrt(Math.pow(pickupX - x, 2) + Math.pow(pickupY - y, 2));
             if (distance < lowestDistance) {
                 pickupClosest = true;
                 closestPickup = pickup;
                 lowestDistance = distance;
+                xDist = pickupX - x;
+                yDist = pickupY - y;
             }
         }
 
@@ -86,7 +100,7 @@ public class AIPlayer extends Player {
         if (waitingPeriod <= 0) {
             if (xSpeed == 0 && ySpeed == 0) {
                 if (getBombsDeployed() == 0) {
-                    if (Math.random() < 0.6 * dt) {
+                    if (Math.random() < 0.1 * dt) { //TODO: this sucks. replace it with a timer or something smarter
                         createBomb();
                     }
                 } else {
@@ -115,34 +129,42 @@ public class AIPlayer extends Player {
         rightKeyDown = false;
 
         if (getBombsDeployed() == 0) {
-            if (targetY > y) {
-                upKeyDown = true;
-                downKeyDown = false;
-            } else {
-                upKeyDown = false;
-                downKeyDown = true;
+            if (Math.abs(yDist) > TILE_SIZE || Math.abs(xDist) < TILE_SIZE) {
+                if (targetY > y) {
+                    upKeyDown = true;
+                    downKeyDown = false;
+                } else {
+                    upKeyDown = false;
+                    downKeyDown = true;
+                }
             }
-            if (targetX > x) {
-                rightKeyDown = true;
-                leftKeyDown = false;
-            } else {
-                rightKeyDown = false;
-                leftKeyDown = true;
+            if (Math.abs(xDist) > TILE_SIZE || Math.abs(yDist) < TILE_SIZE) {
+                if (targetX > x) {
+                    rightKeyDown = true;
+                    leftKeyDown = false;
+                } else {
+                    rightKeyDown = false;
+                    leftKeyDown = true;
+                }
             }
         } else {
-            if (targetY > y) {
-                upKeyDown = false;
-                downKeyDown = true;
-            } else {
-                upKeyDown = true;
-                downKeyDown = false;
+            if (Math.abs(yDist) > TILE_SIZE || Math.abs(xDist) < TILE_SIZE) {
+                if (targetY > y) {
+                    upKeyDown = false;
+                    downKeyDown = true;
+                } else {
+                    upKeyDown = true;
+                    downKeyDown = false;
+                }
             }
-            if (targetX > x) {
-                rightKeyDown = false;
-                leftKeyDown = true;
-            } else {
-                rightKeyDown = true;
-                leftKeyDown = false;
+            if (Math.abs(xDist) > TILE_SIZE || Math.abs(yDist) < TILE_SIZE) {
+                if (targetX > x) {
+                    rightKeyDown = false;
+                    leftKeyDown = true;
+                } else {
+                    rightKeyDown = true;
+                    leftKeyDown = false;
+                }
             }
         }
 
