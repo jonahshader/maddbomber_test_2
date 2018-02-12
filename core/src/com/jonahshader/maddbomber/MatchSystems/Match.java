@@ -38,7 +38,6 @@ public class Match implements Disposable{
         this.playerCount = playerCount;
         gameCam = new OrthographicCamera();
         hud = new Hud(game.batch);
-//        gameWorld = new GameWorld("Maps/Sandstone.tmx");
         gameWorld = new GameWorld(mapFileName);
         gamePort = new FitViewport(gameWorld.getMapProperties().get("width", Integer.class) * MaddBomber.TILE_SIZE, gameWorld.getMapProperties().get("height", Integer.class) * MaddBomber.TILE_SIZE, gameCam);
         mapRenderer = new OrthogonalTiledMapRenderer(gameWorld.getMap());
