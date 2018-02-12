@@ -56,7 +56,7 @@ public class Match implements Disposable{
                 game,
                 0));
 
-        addPlayer(new AIPlayer(
+        addPlayer(new Player(
                 14,
                 6,
                 game.controls.getControlProfile(1),
