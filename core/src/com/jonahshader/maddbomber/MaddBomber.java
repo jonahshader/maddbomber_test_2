@@ -3,6 +3,8 @@ package com.jonahshader.maddbomber;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.jonahshader.maddbomber.MenuItems.Button;
 import com.jonahshader.maddbomber.Screens.PlayScreen;
 
 /*
@@ -16,6 +18,7 @@ public class MaddBomber extends Game {
 	public static final int V_HEIGHT = 360;
 	public static final int TILE_SIZE = 32;
 	public SpriteBatch batch;
+	public ShapeRenderer shapeRenderer;
 	public ControlManager controls;
 	public Assets assets;
 	
@@ -35,6 +38,7 @@ public class MaddBomber extends Game {
 		}
 
 		batch = new SpriteBatch();	//Main sprite batch
+		shapeRenderer = new ShapeRenderer();
 		controls = new ControlManager();
 		setScreen(new PlayScreen(this));
 	}

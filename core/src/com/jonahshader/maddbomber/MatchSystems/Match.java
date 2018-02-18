@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
@@ -13,6 +14,7 @@ import com.jonahshader.maddbomber.AIPlayer;
 import com.jonahshader.maddbomber.GameItems.Pickups.Pickup;
 import com.jonahshader.maddbomber.GameWorld;
 import com.jonahshader.maddbomber.MaddBomber;
+import com.jonahshader.maddbomber.MenuItems.Button;
 import com.jonahshader.maddbomber.Player;
 import com.jonahshader.maddbomber.Scenes.Hud;
 
@@ -31,6 +33,9 @@ public class Match implements Disposable{
     //Map stuff
     private GameWorld gameWorld;
     private OrthogonalTiledMapRenderer mapRenderer;
+
+    //temp button thing
+    Button tempButton;
 
     //TODO: put more stuff in this constructor, like a ControlProfile array, map, playerTexture array, etc.
     public Match(MaddBomber game, int playerCount, String mapFileName) {
@@ -64,6 +69,7 @@ public class Match implements Disposable{
                 game,
                 1));
 
+        tempButton = new Button(10, 10, 30, 20, "hi guys im a button");
     }
 
     //first thing that runs in render method
@@ -74,6 +80,8 @@ public class Match implements Disposable{
         hud.updateLables();
         updateScores();
         itemSpawner(dt);
+        tempButton.run(dt, Gdx.input.getX(), Gdx.input.getY());
+        System.out.println(Gdx.input.getX() + " " + Gdx.input.getY());
     }
 
     public void render(float delta) {
@@ -85,9 +93,21 @@ public class Match implements Disposable{
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
         game.batch.setProjectionMatrix(gameCam.combined);
+        game.shapeRenderer.setProjectionMatrix(hud.stage.getCamera().combined);
 
         game.batch.begin();
         gameWorld.draw(game.batch);
+
+        game.batch.end();
+
+        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        //draw button shapes
+        tempButton.drawButton(game.shapeRenderer);
+        game.shapeRenderer.end();
+
+        //Start another batch for displaying text
+        game.batch.begin();
+        tempButton.drawText(game.batch);
         game.batch.end();
     }
 

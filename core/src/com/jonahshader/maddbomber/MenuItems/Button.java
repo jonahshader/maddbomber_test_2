@@ -76,7 +76,7 @@ public class Button {
         font.draw(batch, text, x + width / 2, y + height / 2);
     }
 
-    public void run(float dt) {
+    public void run(float dt, float mouseX, float mouseY) {
         //Update edge thickness
         if (mouseOver) {
             if (edgeThickness < MAX_EDGE_THICKNESS) {
@@ -91,9 +91,8 @@ public class Button {
                 edgeThickness = MIN_EDGE_THICKNESS;
             }
         }
-    }
 
-    public void setMouseOver(boolean mouseOver) {
-        this.mouseOver = mouseOver;
+        mouseOver = (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height);
+        System.out.println(mouseOver);
     }
 }

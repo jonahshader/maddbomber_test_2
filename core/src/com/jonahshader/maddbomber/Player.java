@@ -239,12 +239,12 @@ public class Player implements InputProcessor {
                     if (yBias > MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the upper half of the tile...
                         if (!movementKernel[0][2]) { //if the block directly to the top left of the player is not solid...
                             tempYSpd = 1; //move up (should already be moving left)
-                            System.out.println("correction upwards");
+//                            System.out.println("correction upwards");
                         }
                     } else if (yBias < -MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the lower half of the tile...
                         if (!movementKernel[0][0]) { //if the block directly to the bottom left of the player is not solid...
                             tempYSpd = -1; //move down (should already be moving left)
-                            System.out.println("correction downwards");
+//                            System.out.println("correction downwards");
                         }
                     }
                 }
@@ -266,12 +266,12 @@ public class Player implements InputProcessor {
                     if (yBias > MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the upper half of the tile...
                         if (!movementKernel[2][2]) { //if the block directly to the top right of the player is not solid...
                             tempYSpd = 1; //move up (should already be moving left)
-                            System.out.println("correction upwards");
+//                            System.out.println("correction upwards");
                         }
                     } else if (yBias < -MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the lower half of the tile...
                         if (!movementKernel[2][0]) { //if the block directly to the bottom right of the player is not solid...
                             tempYSpd = -1; //move down (should already be moving left)
-                            System.out.println("correction downwards");
+//                            System.out.println("correction downwards");
                         }
                     }
                 }
@@ -292,12 +292,12 @@ public class Player implements InputProcessor {
                     if (xBias > MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the right half of the tile...
                         if (!movementKernel[2][2]) { //if the block directly to the top right of the player is not solid...
                             tempXSpd = 1; //move right (should already be moving up)
-                            System.out.println("correction right");
+//                            System.out.println("correction right");
                         }
                     } else if (xBias < -MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the left half of the tile...
                         if (!movementKernel[0][2]) { //if the block directly to the top left of the player is not solid...
                             tempXSpd = -1; //move left (should already be moving up)
-                            System.out.println("correction left");
+//                            System.out.println("correction left");
                         }
                     }
                 }
@@ -318,12 +318,12 @@ public class Player implements InputProcessor {
                     if (xBias > MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the right half of the tile...
                         if (!movementKernel[2][0]) { //if the block directly to the bottom right of the player is not solid...
                             tempXSpd = 1; //move right (should already be moving up)
-                            System.out.println("correction right");
+//                            System.out.println("correction right");
                         }
                     } else if (xBias < -MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the left half of the tile...
                         if (!movementKernel[0][0]) { //if the block directly to the bottom left of the player is not solid...
                             tempXSpd = -1; //move left (should already be moving up)
-                            System.out.println("correction left");
+//                            System.out.println("correction left");
                         }
                     }
                 }
