@@ -10,6 +10,7 @@ import com.jonahshader.maddbomber.Player;
 
 
 public class Pickup {
+    final static double SPEED_INCREASE_FACTOR = 1.1;
     public enum PickupType {
         BOMB_COUNT_INCREASE,
         EXPLOSION_SIZE_INCREASE,
@@ -64,7 +65,7 @@ public class Pickup {
             case EXPLOSION_SIZE_INCREASE:
                 break;
             case SPEED_INCREASE:
-                user.increaseSpeedByFactor(1.25);
+                user.increaseSpeedByFactor(SPEED_INCREASE_FACTOR);
                 break;
         }
         isUsed = true;

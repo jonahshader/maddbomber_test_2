@@ -20,15 +20,17 @@ import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
 
 public class Player implements InputProcessor {
 
-    final static double FRICTION_REGULAR = 20;
+//    final static double FRICTION_REGULAR = 20;
+    final static double FRICTION_REGULAR = 10;
     //Center of player sprite
     //in world pixels (probably 32 pixels per tile)
     protected double x, y, xSpeed, ySpeed;
     private double maxSpeedCurrent;
+    final static double INITIAL_MAX_SPEED = 225;
     private static double width = 26;
     private static double height = 26;
-//    final static double MOVE_AUTO_CORRECT_THRESHOLD = (TILE_SIZE - width) / 2;
-    final static double MOVE_AUTO_CORRECT_THRESHOLD = 0;
+    final static double MOVE_AUTO_CORRECT_THRESHOLD = (TILE_SIZE - width) / 2;
+//    final static double MOVE_AUTO_CORRECT_THRESHOLD = 0;
     private int bombsDeployed = 0;
     private int maxDeployedBombs;
     private int explosionSize;
@@ -181,7 +183,7 @@ public class Player implements InputProcessor {
         resetStats();
         spawned = false;
         System.out.println(cause);
-        game.assets.manager.get(game.assets.death, Sound.class).play(0.27f);
+        game.assets.manager.get(game.assets.death, Sound.class).play(0.27f, 1, (float) ((((x / TILE_SIZE) / (gameWorld.getMapProperties().get("width", Integer.class))) - 0.5f) * 1f));
     }
 
     public void respawn(int spawnTileX, int spawnTileY) {
@@ -347,8 +349,8 @@ public class Player implements InputProcessor {
         ySpeed += tempYSpd * FRICTION_REGULAR * dt * 2;
 
         //clamp values to max speed
-        xSpeed = limit(xSpeed, -maxSpeedCurrent, maxSpeedCurrent);
-        ySpeed = limit(ySpeed, -maxSpeedCurrent, maxSpeedCurrent);
+        xSpeed = limit(xSpeed, -(maxSpeedCurrent * dt), (maxSpeedCurrent * dt));
+        ySpeed = limit(ySpeed, -(maxSpeedCurrent * dt), (maxSpeedCurrent * dt));
 
         //apply friction to x
         if (xSpeed > 0) {
@@ -364,6 +366,21 @@ public class Player implements InputProcessor {
                 xSpeed = 0;
             }
         }
+
+//        //apply friction to x
+//        if (xSpeed > 0) {
+//            if ((xSpeed - (FRICTION_REGULAR)) > 0) {
+//                xSpeed -= (FRICTION_REGULAR);
+//            } else {
+//                xSpeed = 0;
+//            }
+//        } else if (xSpeed < 0) {
+//            if ((xSpeed + (FRICTION_REGULAR)) < 0) {
+//                xSpeed += (FRICTION_REGULAR);
+//            } else {
+//                xSpeed = 0;
+//            }
+//        }
 
         //apply friction to y
         if (ySpeed > 0) {
@@ -491,9 +508,9 @@ public class Player implements InputProcessor {
     }
 
     private void resetStats() {
-        maxSpeedCurrent = 2;
-        maxDeployedBombs = 2;
-        explosionSize = 2;
+        maxSpeedCurrent = INITIAL_MAX_SPEED;
+        maxDeployedBombs = 1;
+        explosionSize = 1;
     }
 
     public void draw(SpriteBatch batch) {

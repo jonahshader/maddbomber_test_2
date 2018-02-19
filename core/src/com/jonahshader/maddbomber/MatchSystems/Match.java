@@ -2,6 +2,7 @@ package com.jonahshader.maddbomber.MatchSystems;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -69,7 +70,7 @@ public class Match implements Disposable{
                 game,
                 1));
 
-        tempButton = new Button(10, 10, 30, 20, "hi guys im a button");
+        tempButton = new Button(200, 150, 90, 35, "hi guys im a button");
     }
 
     //first thing that runs in render method
@@ -80,8 +81,7 @@ public class Match implements Disposable{
         hud.updateLables();
         updateScores();
         itemSpawner(dt);
-        tempButton.run(dt, Gdx.input.getX(), Gdx.input.getY());
-        System.out.println(Gdx.input.getX() + " " + Gdx.input.getY());
+        tempButton.run(dt, hud.stage.getCamera());
     }
 
     public void render(float delta) {
@@ -97,16 +97,17 @@ public class Match implements Disposable{
 
         game.batch.begin();
         gameWorld.draw(game.batch);
-
         game.batch.end();
 
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         //draw button shapes
-        tempButton.drawButton(game.shapeRenderer);
+        game.shapeRenderer.setProjectionMatrix(hud.stage.getCamera().combined);
+        tempButton.drawButton(game.shapeRenderer, hud.stage.getCamera());
         game.shapeRenderer.end();
 
         //Start another batch for displaying text
         game.batch.begin();
+        game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         tempButton.drawText(game.batch);
         game.batch.end();
     }
@@ -126,8 +127,9 @@ public class Match implements Disposable{
         gameWorld.getPlayers().remove(player);
     }
 
-    private Vector3 getMousePosInGameWorld() {
-        return gamePort.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+    public static Vector3 getMousePosInGameWorld(Camera cam) {
+
+        return cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
     }
 
     private void updateScores() {

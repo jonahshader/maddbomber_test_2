@@ -41,7 +41,7 @@ public class Bomb {
         hitbox = new Rectangle(tileX * MaddBomber.TILE_SIZE, tileY * MaddBomber.TILE_SIZE, MaddBomber.TILE_SIZE, MaddBomber.TILE_SIZE);
         texture = itemAtlas.findRegion("bomb");
 
-        soundId = game.assets.manager.get(game.assets.fuse, Sound.class).play(0.1f, 1f, ((tileX / (float) (gameWorld.getMapProperties().get("width", Integer.class)) / MaddBomber.TILE_SIZE) - 0.5f) * 2f);
+        soundId = game.assets.manager.get(game.assets.fuse, Sound.class).play(0.1f, 1f, ((tileX / (float) (gameWorld.getMapProperties().get("width", Integer.class))) - 0.5f) * 1f);
         game.assets.manager.get(game.assets.fuse, Sound.class).setLooping(soundId, true);
     }
 
@@ -79,7 +79,7 @@ public class Bomb {
         //create fire cellular automata
         gameWorld.getExplosions().add(new Explosion(tileX, tileY, explosionSize, Explosion.Direction.ALL, game, owner, gameWorld));
         game.assets.manager.get(game.assets.fuse, Sound.class).stop(soundId);
-        game.assets.manager.get(game.assets.explosion, Sound.class).play(0.17f);
+        game.assets.manager.get(game.assets.explosion, Sound.class).play(0.17f, 1, ((tileX / (float) (gameWorld.getMapProperties().get("width", Integer.class))) - 0.5f));
         used = true;
     }
 
