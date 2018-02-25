@@ -1,5 +1,6 @@
 package com.jonahshader.maddbomber.Scenes;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -12,7 +13,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jonahshader.maddbomber.MaddBomber;
 
 public class Hud {
-    public Stage stage;
+    private Camera cam;
+    private Stage stage;
     private Viewport viewport;
 
     private Integer player1Score;
@@ -28,15 +30,16 @@ public class Hud {
     Label timeRemainingLabel;
     Label stageLabel;
 
-    public Hud(SpriteBatch batch) {
+    public Hud() {
         player1Score = 0;
         player2Score = 0;
         player3Score = 0;
         player4Score = 0;
         timeRemaining = 300.0; //TODO: parameterize
 
-        viewport = new FitViewport(MaddBomber.V_WIDTH, MaddBomber.V_HEIGHT, new OrthographicCamera());
-        stage = new Stage(viewport, batch);
+        cam = new OrthographicCamera(MaddBomber.V_WIDTH, MaddBomber.V_HEIGHT);
+        viewport = new FitViewport(MaddBomber.V_WIDTH, MaddBomber.V_HEIGHT, cam);
+        stage = new Stage(viewport);
 
         Table table = new Table();
         table.top(); //this sets vertical allignment to top
@@ -85,5 +88,9 @@ public class Hud {
 
     public void setTimeRemaining(Double timeRemaining) {
         this.timeRemaining = timeRemaining;
+    }
+
+    public Camera getCamera() {
+        return cam;
     }
 }

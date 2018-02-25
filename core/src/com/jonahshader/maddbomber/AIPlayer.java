@@ -1,5 +1,6 @@
 package com.jonahshader.maddbomber;
 
+import com.badlogic.gdx.graphics.Color;
 import com.jonahshader.maddbomber.GameItems.Bomb;
 import com.jonahshader.maddbomber.GameItems.Explosion;
 import com.jonahshader.maddbomber.GameItems.Pickups.Pickup;
@@ -10,8 +11,8 @@ public class AIPlayer extends Player {
 
     double waitingPeriod = 0;
 
-    public AIPlayer(int tileX, int tileY, ControlProfile controlProfile, GameWorld gameWorld, MaddBomber game, int playerId) {
-        super(tileX, tileY, controlProfile, gameWorld, game, playerId);
+    public AIPlayer(int tileX, int tileY, ControlProfile controlProfile, GameWorld gameWorld, MaddBomber game, int playerId, Color playerColor) {
+        super(tileX, tileY, controlProfile, gameWorld, game, playerId, playerColor);
     }
 
     @Override

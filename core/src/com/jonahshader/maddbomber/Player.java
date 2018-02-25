@@ -2,6 +2,7 @@ package com.jonahshader.maddbomber;
 
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -20,10 +21,9 @@ import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
 
 public class Player implements InputProcessor {
 
-//    final static double FRICTION_REGULAR = 20;
-    final static double FRICTION_REGULAR = 10;
+    final static double FRICTION_REGULAR = 15;
     //Center of player sprite
-    //in world pixels (probably 32 pixels per tile)
+    //in world pixels
     protected double x, y, xSpeed, ySpeed;
     private double maxSpeedCurrent;
     final static double INITIAL_MAX_SPEED = 225;
@@ -37,6 +37,7 @@ public class Player implements InputProcessor {
     private int score = 0;
 
     private Sprite sprite;
+    private Color playerColor;
     private TextureAtlas itemAtlas;
     private Rectangle hitbox;
     private TiledMap map;
@@ -56,13 +57,14 @@ public class Player implements InputProcessor {
     private ControlProfile controlProfile;
     protected boolean upKeyDown, downKeyDown, leftKeyDown, rightKeyDown, placeKeyDown, activateKeyDown;
 
-    public Player(int tileX, int tileY, ControlProfile controlProfile, GameWorld gameWorld, MaddBomber game, int playerId) {
+    public Player(int tileX, int tileY, ControlProfile controlProfile, GameWorld gameWorld, MaddBomber game, int playerId, Color playerColor) {
         this.playerId = playerId;
         this.controlProfile = controlProfile;
         this.map = gameWorld.getMap();
         this.itemAtlas = game.assets.manager.get(game.assets.itemAtlas, TextureAtlas.class);
         this.gameWorld = gameWorld;
         this.game = game;
+        this.playerColor = playerColor;
         TextureRegion tr = new TextureRegion(itemAtlas.findRegion("player"));
         spawner = new PlayerSpawner(gameWorld, this);
         prop = map.getProperties();
@@ -444,6 +446,8 @@ public class Player implements InputProcessor {
             checkExplosionCollision();
             checkPickupCollision();
         } else { //if not spawned...
+            xSpeed = 0;
+            ySpeed = 0;
             spawner.run(dt);
         }
 
@@ -514,8 +518,10 @@ public class Player implements InputProcessor {
     }
 
     public void draw(SpriteBatch batch) {
-        if (spawned)
+        if (spawned) {
+            sprite.setColor(playerColor);
             sprite.draw(batch);
+        }
     }
 
     public void addBombToIgnore(Bomb bomb) {

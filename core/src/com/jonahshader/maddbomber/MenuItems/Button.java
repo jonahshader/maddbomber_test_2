@@ -92,6 +92,8 @@ public class Button {
 
     public void run(float dt, Camera cam) {
         Vector3 mouseLocation = getMousePosInGameWorld(cam);
+        float mouseX = mouseLocation.x;
+        float mouseY = mouseLocation.y;
         //Update edge thickness
         if (mouseOver) {
             if (edgeThickness < MAX_EDGE_THICKNESS) {
@@ -107,6 +109,6 @@ public class Button {
             }
         }
 
-        mouseOver = (mouseLocation.x >= x && mouseLocation.x < x + width && mouseLocation.y >= y && mouseLocation.y < y + height);
+        mouseOver = (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height);
     }
 }

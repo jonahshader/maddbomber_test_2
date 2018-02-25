@@ -3,13 +3,16 @@ package com.jonahshader.maddbomber.MatchSystems;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jonahshader.maddbomber.AIPlayer;
 import com.jonahshader.maddbomber.GameItems.Pickups.Pickup;
@@ -42,10 +45,11 @@ public class Match implements Disposable{
     public Match(MaddBomber game, int playerCount, String mapFileName) {
         this.game = game;
         this.playerCount = playerCount;
-        gameCam = new OrthographicCamera();
-        hud = new Hud(game.batch);
+        gameCam = new OrthographicCamera(MaddBomber.V_WIDTH, MaddBomber.V_HEIGHT);
+        hud = new Hud();
         gameWorld = new GameWorld(mapFileName);
         gamePort = new FitViewport(gameWorld.getMapProperties().get("width", Integer.class) * MaddBomber.TILE_SIZE, gameWorld.getMapProperties().get("height", Integer.class) * MaddBomber.TILE_SIZE, gameCam);
+//        gamePort = new StretchViewport(gameWorld.getMapProperties().get("width", Integer.class) * MaddBomber.TILE_SIZE, gameWorld.getMapProperties().get("height", Integer.class) * MaddBomber.TILE_SIZE, gameCam);
         mapRenderer = new OrthogonalTiledMapRenderer(gameWorld.getMap());
         gameCam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
@@ -60,7 +64,8 @@ public class Match implements Disposable{
                 game.controls.getControlProfile(0),
                 gameWorld,
                 game,
-                0));
+                0,
+                new Color(1f, 0.75f, 0.75f, 1f)));
 
         addPlayer(new Player(
                 14,
@@ -68,7 +73,8 @@ public class Match implements Disposable{
                 game.controls.getControlProfile(1),
                 gameWorld,
                 game,
-                1));
+                1,
+                new Color(0.75f, 0.75f, 1f, 1f)));
 
         tempButton = new Button(200, 150, 90, 35, "hi guys im a button");
     }
@@ -81,7 +87,7 @@ public class Match implements Disposable{
         hud.updateLables();
         updateScores();
         itemSpawner(dt);
-        tempButton.run(dt, hud.stage.getCamera());
+        tempButton.run(dt, hud.getCamera());
     }
 
     public void render(float delta) {
@@ -89,25 +95,25 @@ public class Match implements Disposable{
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        mapRenderer.render();
-        game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
-        hud.stage.draw();
         game.batch.setProjectionMatrix(gameCam.combined);
-        game.shapeRenderer.setProjectionMatrix(hud.stage.getCamera().combined);
+        mapRenderer.setView(gameCam);
+        mapRenderer.render();
+//        hud.stage.draw();
 
         game.batch.begin();
+        game.batch.setProjectionMatrix(gameCam.combined);
         gameWorld.draw(game.batch);
         game.batch.end();
 
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         //draw button shapes
-        game.shapeRenderer.setProjectionMatrix(hud.stage.getCamera().combined);
-        tempButton.drawButton(game.shapeRenderer, hud.stage.getCamera());
+        game.shapeRenderer.setProjectionMatrix(hud.getCamera().combined);
+        tempButton.drawButton(game.shapeRenderer, hud.getCamera());
         game.shapeRenderer.end();
 
         //Start another batch for displaying text
         game.batch.begin();
-        game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        game.batch.setProjectionMatrix(hud.getCamera().combined);
         tempButton.drawText(game.batch);
         game.batch.end();
     }
@@ -115,6 +121,7 @@ public class Match implements Disposable{
     public void resize(int width, int height) {
         //viewport needs to be updated
         gamePort.update(width, height);
+        gameCam.update();
     }
 
     public void addPlayer(Player player) {
@@ -128,7 +135,6 @@ public class Match implements Disposable{
     }
 
     public static Vector3 getMousePosInGameWorld(Camera cam) {
-
         return cam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
     }
 
