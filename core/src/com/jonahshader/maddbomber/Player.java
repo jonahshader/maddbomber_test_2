@@ -353,6 +353,8 @@ public class Player implements InputProcessor {
         //clamp values to max speed
         xSpeed = limit(xSpeed, -(maxSpeedCurrent * dt), (maxSpeedCurrent * dt));
         ySpeed = limit(ySpeed, -(maxSpeedCurrent * dt), (maxSpeedCurrent * dt));
+//        xSpeed = limit(xSpeed, -(maxSpeedCurrent), (maxSpeedCurrent));
+//        ySpeed = limit(ySpeed, -(maxSpeedCurrent), (maxSpeedCurrent));
 
         //apply friction to x
         if (xSpeed > 0) {
@@ -400,8 +402,10 @@ public class Player implements InputProcessor {
         }
 
         //move the player based on this speed
-        x += xSpeed * dt * TILE_SIZE;
-        y += ySpeed * dt * TILE_SIZE;
+//        x += (xSpeed * dt) * TILE_SIZE;
+//        y += (ySpeed * dt) * TILE_SIZE;
+        x += xSpeed * TILE_SIZE * (1.0/144);
+        y += ySpeed * TILE_SIZE * (1.0/144);
 
         if (xSpeed != 0 || ySpeed != 0) {
             sprite.setRotation((float) (180.0 * Math.atan2(ySpeed, xSpeed) / Math.PI) - 90);
@@ -511,7 +515,7 @@ public class Player implements InputProcessor {
         }
     }
 
-    private void resetStats() {
+    protected void resetStats() {
         maxSpeedCurrent = INITIAL_MAX_SPEED;
         maxDeployedBombs = 1;
         explosionSize = 1;

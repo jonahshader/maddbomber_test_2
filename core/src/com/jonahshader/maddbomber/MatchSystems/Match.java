@@ -38,9 +38,6 @@ public class Match implements Disposable{
     private GameWorld gameWorld;
     private OrthogonalTiledMapRenderer mapRenderer;
 
-    //temp button thing
-    Button tempButton;
-
     //TODO: put more stuff in this constructor, like a ControlProfile array, map, playerTexture array, etc.
     public Match(MaddBomber game, int playerCount, String mapFileName) {
         this.game = game;
@@ -58,7 +55,7 @@ public class Match implements Disposable{
         Gdx.input.setInputProcessor(multiplexer);
 
         //temp: add a player to the map
-        addPlayer(new Player(
+        addPlayer(new AIPlayer(
                 1,
                 1,
                 game.controls.getControlProfile(0),
@@ -76,7 +73,10 @@ public class Match implements Disposable{
                 1,
                 new Color(0.75f, 0.75f, 1f, 1f)));
 
-        tempButton = new Button(200, 150, 90, 35, "hi guys im a button");
+        addPlayer(new AIPlayer(1, 6, game.controls.getControlProfile(0), gameWorld, game, 2, new Color(1, 0.2f, 0.8f, 1f)));
+        addPlayer(new AIPlayer(14, 1, game.controls.getControlProfile(0), gameWorld, game, 3, new Color(0.1f, 0.2f, 0.3f, 0.8f)));
+
+//        tempButton = new Button(200, 150, 90, 35, "hi guys im a button");
     }
 
     //first thing that runs in render method
@@ -87,7 +87,6 @@ public class Match implements Disposable{
         hud.updateLables();
         updateScores();
         itemSpawner(dt);
-        tempButton.run(dt, hud.getCamera());
     }
 
     public void render(float delta) {
@@ -98,24 +97,22 @@ public class Match implements Disposable{
         game.batch.setProjectionMatrix(gameCam.combined);
         mapRenderer.setView(gameCam);
         mapRenderer.render();
-//        hud.stage.draw();
+        hud.draw();
 
         game.batch.begin();
         game.batch.setProjectionMatrix(gameCam.combined);
         gameWorld.draw(game.batch);
         game.batch.end();
 
-        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        //draw button shapes
-        game.shapeRenderer.setProjectionMatrix(hud.getCamera().combined);
-        tempButton.drawButton(game.shapeRenderer, hud.getCamera());
-        game.shapeRenderer.end();
+//        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//        //draw button shapes
+//        game.shapeRenderer.setProjectionMatrix(hud.getCamera().combined);
+//        game.shapeRenderer.end();
 
-        //Start another batch for displaying text
-        game.batch.begin();
-        game.batch.setProjectionMatrix(hud.getCamera().combined);
-        tempButton.drawText(game.batch);
-        game.batch.end();
+//        //Start another batch for displaying text
+//        game.batch.begin();
+//        game.batch.setProjectionMatrix(hud.getCamera().combined);
+//        game.batch.end();
     }
 
     public void resize(int width, int height) {

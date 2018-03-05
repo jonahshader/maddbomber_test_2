@@ -70,6 +70,10 @@ public class Hud {
         player4label.setText("Player 4 Score: " + player4Score);
     }
 
+    public void draw() {
+        stage.draw();
+    }
+
     public void setPlayer1Score(Integer player1Score) {
         this.player1Score = player1Score;
     }

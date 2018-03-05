@@ -10,6 +10,8 @@ import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
 public class AIPlayer extends Player {
 
     double waitingPeriod = 0;
+    int motionlessCounts = 0;
+    final int MOTIONLESS_THRESHOLD = 3;
 
     public AIPlayer(int tileX, int tileY, ControlProfile controlProfile, GameWorld gameWorld, MaddBomber game, int playerId, Color playerColor) {
         super(tileX, tileY, controlProfile, gameWorld, game, playerId, playerColor);
@@ -94,7 +96,7 @@ public class AIPlayer extends Player {
             }
         }
 
-        if (lowestDistance < 2 * TILE_SIZE && !pickupClosest) {
+        if (lowestDistance < 1.4 * TILE_SIZE && !pickupClosest) {
             createBomb();
         }
 
@@ -104,8 +106,13 @@ public class AIPlayer extends Player {
                     if (Math.random() < 0.1 * dt) { //TODO: this sucks. replace it with a timer or something smarter
                         createBomb();
                     }
+                    motionlessCounts = 0;
                 } else {
-                    resetWaitingPeriod();
+                    if (motionlessCounts >= MOTIONLESS_THRESHOLD) {
+                        resetWaitingPeriod();
+                    } else {
+                        motionlessCounts++;
+                    }
                 }
             }
         }
@@ -182,5 +189,11 @@ public class AIPlayer extends Player {
 
     private void resetWaitingPeriod() {
         waitingPeriod = Bomb.FUSE_TIME_MAX + Explosion.EXPLOSION_TIME;
+    }
+
+    @Override
+    protected void resetStats() {
+        super.resetStats();
+        waitingPeriod = 0;
     }
 }
