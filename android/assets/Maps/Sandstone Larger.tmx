@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="24" height="16" tilewidth="32" tileheight="32" nextobjectid="38">
+ <tileset firstgid="1" name="sandstone_tileset" tilewidth="32" tileheight="32" spacing="2" margin="1" tilecount="3" columns="3">
+  <image source="../Spritesheets/sandstone_spritesheet.png" width="128" height="64"/>
+ </tileset>
+ <tileset firstgid="4" name="items_tileset" tilewidth="32" tileheight="32" spacing="2" margin="1" tilecount="7" columns="7">
+  <image source="../Spritesheets/non_tile_spritesheet.png" width="256" height="64"/>
+ </tileset>
+ <tileset firstgid="11" name="all_map_tileset" tilewidth="32" tileheight="32" spacing="2" margin="1" tilecount="7" columns="7">
+  <image source="../Spritesheets/map_multiuse_spreadsheet.png" width="256" height="64"/>
+ </tileset>
+ <layer name="Void" width="24" height="16">
+  <data encoding="base64" compression="zlib">
+   eJzjZ2Bg4B/Fo3gUj+JRPOIwALbtFoE=
+  </data>
+ </layer>
+ <layer name="Background" width="24" height="16">
+  <data encoding="base64" compression="zlib">
+   eJxjYmBgYBrFo3gUj+JRPOIwAAyHAwE=
+  </data>
+ </layer>
+ <layer name="Explodable" width="24" height="16">
+  <data encoding="base64" compression="zlib">
+   eJztlDsOACAIQ+X+l3YlxH4wsslCbLA81LjWfETKUdY5nzS1l/WrWvVQe05MjF/NgfhdjXEpjc1duTr1roYYHS+Xt1ODYsJ/+nzc+3J4kT9jRHHz1v//oPu9jA3hSwCf
+  </data>
+ </layer>
+ <layer name="Walls" width="24" height="16">
+  <data encoding="base64" compression="zlib">
+   eJxjZmBgYKYxJhaQohamHl0PMw4an3241JLqfkL2YVOLzQ24xLCFKzH6cLkPnxyx6kkxA5sb8eklVT02QE33UGI+LdxDavziMoMY8+mVPvGBkVo+0BIDAE/PAcM=
+  </data>
+ </layer>
+ <layer name="Items" width="24" height="16">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIJRMBIBAAYAAAE=
+  </data>
+ </layer>
+ <objectgroup name="Players">
+  <object id="31" name="P1" gid="11" x="64" y="96" width="32" height="32"/>
+  <object id="34" name="P2" gid="12" x="672" y="448" width="32" height="32"/>
+  <object id="35" name="P3" gid="13" x="672" y="96" width="32" height="32"/>
+  <object id="36" name="P4" gid="14" x="64" y="448" width="32" height="32"/>
+ </objectgroup>
+</map>
