@@ -10,7 +10,7 @@ public class PlayScreen implements Screen {
 
     public PlayScreen(MaddBomber game) {
         this.game = game;
-        match = new Match(game, 1, "Maps/Sandstone.tmx");
+        match = new Match(game, 1, "Maps/Sandstone Larger.tmx");
     }
 
     @Override
