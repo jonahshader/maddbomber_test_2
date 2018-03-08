@@ -16,7 +16,7 @@ public class ExplosionPropagator {
     GameWorld world;
 
     public ExplosionPropagator(int tileX, int tileY, int explosionRadius, Direction direction, GameWorld gameWorld) {
-
+//asdf
     }
 
     //TODO: create sub class for actual explosions. these do the actual propogation and returns their data to an array stored in its parent class (this)
