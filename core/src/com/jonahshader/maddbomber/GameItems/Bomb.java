@@ -72,7 +72,7 @@ public class Bomb {
     }
 
     public void activate() {
-
+        explode(); //go boom
     }
 
     private void explode() {

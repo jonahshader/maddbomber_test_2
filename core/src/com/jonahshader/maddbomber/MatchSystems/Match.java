@@ -74,10 +74,10 @@ public class Match implements Disposable{
                 new Color(0.75f, 0.75f, 1f, 1f)));
 
         addPlayer(new AIPlayer(1, 6, game.controls.getControlProfile(0), gameWorld, game, 2, new Color(1, 0.2f, 0.8f, 1f)));
-//        addPlayer(new AIPlayer(14, 1, game.controls.getControlProfile(0), gameWorld, game, 3, new Color(0.1f, 0.2f, 0.3f, 0.8f)));
-        for (int i = 0; i < 6; i++) {
-            addPlayer(new AIPlayer(14, 1, game.controls.getControlProfile(0), gameWorld, game, 3, new Color((float) Math.random(), (float) Math.random(), (float) Math.random(), 1f)));
-        }
+        addPlayer(new AIPlayer(14, 1, game.controls.getControlProfile(0), gameWorld, game, 3, new Color(0.1f, 0.2f, 0.3f, 0.8f)));
+//        for (int i = 0; i < 6; i++) {
+//            addPlayer(new AIPlayer(14, 1, game.controls.getControlProfile(0), gameWorld, game, 3, new Color((float) Math.random(), (float) Math.random(), (float) Math.random(), 1f)));
+//        }
 
 
 
