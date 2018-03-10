@@ -1,8 +1,10 @@
 package com.jonahshader.maddbomber.NonObjects;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Vector2;
 import com.jonahshader.maddbomber.GameWorld;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class ExplosionPropagator {
@@ -12,6 +14,50 @@ public class ExplosionPropagator {
         UP,
         DOWN,
         ALL
+    }
+
+    public static ArrayList<Point> getExplosionPattern(int tileX, int tileY, int explosionRadius, GameWorld gameWorld, ArrayList<Point> explosionPoints) {
+
+    }
+
+    private static ArrayList<Point> explosionHelper(int tileX, int tileY, int explosionsRemaining, Direction direction, GameWorld gameWorld, ArrayList<Point> explosionPts, TiledMapTileLayer explodables, TiledMapTileLayer walls) {
+        boolean hitExplodable = explodables.getCell(tileX, tileY) != null;
+
+        //create additional explosions
+        if (!hitExplodable) {
+            if (explosionsRemaining > 0) {
+                switch (direction) {
+                    case LEFT:
+                        if (walls.getCell(tileX - 1, tileY) == null) {
+                            spreaders.add(new ExplosionSpreader(tileX - 1, tileY, explosionsRemaining - 1, direction, gameWorld, spreaders));
+                        }
+                        break;
+                    case RIGHT:
+                        if (walls.getCell(tileX + 1, tileY) == null) {
+                            spreaders.add(new ExplosionSpreader(tileX + 1, tileY, explosionsRemaining - 1, direction, gameWorld, spreaders));
+                        }
+                        break;
+                    case UP:
+                        if (walls.getCell(tileX, tileY + 1) == null)
+                            spreaders.add(new ExplosionSpreader(tileX, tileY + 1, explosionsRemaining - 1, direction, gameWorld, spreaders));
+                        break;
+                    case DOWN:
+                        if (walls.getCell(tileX, tileY - 1) == null)
+                            spreaders.add(new ExplosionSpreader(tileX, tileY - 1, explosionsRemaining - 1, direction, gameWorld, spreaders));
+                        break;
+                    case ALL:
+                        if (walls.getCell(tileX - 1, tileY) == null)
+                            spreaders.add(new ExplosionSpreader(tileX - 1, tileY, explosionsRemaining - 1, Direction.LEFT, gameWorld, spreaders));
+                        if (walls.getCell(tileX + 1, tileY) == null)
+                            spreaders.add(new ExplosionSpreader(tileX + 1, tileY, explosionsRemaining - 1, Direction.RIGHT, gameWorld, spreaders));
+                        if (walls.getCell(tileX, tileY + 1) == null)
+                            spreaders.add(new ExplosionSpreader(tileX, tileY + 1, explosionsRemaining - 1, Direction.UP, gameWorld, spreaders));
+                        if (walls.getCell(tileX, tileY - 1) == null)
+                            spreaders.add(new ExplosionSpreader(tileX, tileY - 1, explosionsRemaining - 1, Direction.DOWN, gameWorld, spreaders));
+                        break;
+                }
+            }
+        }
     }
 
     public class ExplosionSpreader{
