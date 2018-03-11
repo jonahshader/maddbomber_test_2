@@ -8,7 +8,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.jonahshader.maddbomber.GameItems.Pickups.Pickup;
 import com.jonahshader.maddbomber.GameWorld;
 import com.jonahshader.maddbomber.MaddBomber;
+import com.jonahshader.maddbomber.NonObjects.ExplosionPropagator;
 import com.jonahshader.maddbomber.Player;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 public class Explosion {
     public final static float EXPLOSION_TIME = 0.6f;
@@ -53,7 +57,6 @@ public class Explosion {
         TiledMapTileLayer walls = (TiledMapTileLayer) gameWorld.getMap().getLayers().get("Walls");
 
         hitExplodable = explodables.getCell(tileX, tileY) != null;
-
         //create additional explosions
         if (!hitExplodable) {
             if (explosionsRemaining > 0) {

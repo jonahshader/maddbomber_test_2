@@ -90,4 +90,8 @@ public class Bomb {
     public int getTileY() {
         return tileY;
     }
+
+    public int getExplosionSize() {
+        return explosionSize;
+    }
 }
