@@ -40,7 +40,7 @@ public class PlayerSpawner {
     }
 
     private void spawnPlayer() {
-        ArrayList<Point> spawnableLocations = GameWorld.getWalkableSpace(gameWorld.getMap());
+        ArrayList<Point> spawnableLocations = gameWorld.getWalkableSpace();
         Point selectedLocation = spawnableLocations.get((int) (Math.random() * spawnableLocations.size()));
         parentPlayer.respawn(selectedLocation.x, selectedLocation.y);
     }

@@ -164,7 +164,7 @@ public class Match implements Disposable{
 
     private void itemSpawner(float dt) {
         if (Math.random() < 0.1 * dt) {
-            ArrayList<Point> pickupSpawnCanidates = GameWorld.getWalkableSpace(gameWorld.getMap());
+            ArrayList<Point> pickupSpawnCanidates = gameWorld.getWalkableSpace();
             Point selectedLocation = pickupSpawnCanidates.get((int) (Math.random() * pickupSpawnCanidates.size()));
             gameWorld.getPickups().add(new Pickup(selectedLocation.x, selectedLocation.y, Pickup.PickupType.SPEED_INCREASE, game));
         }

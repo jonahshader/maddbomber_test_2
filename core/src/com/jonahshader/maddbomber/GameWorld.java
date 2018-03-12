@@ -102,7 +102,7 @@ public class GameWorld implements Disposable {
         return players;
     }
 
-    public static boolean[][] getCollidables(TiledMap map) {
+    public boolean[][] getCollidables() {
         TiledMapTileLayer walls = (TiledMapTileLayer) map.getLayers().get("Walls");
         TiledMapTileLayer explodable = (TiledMapTileLayer) map.getLayers().get("Explodable");
         int width = map.getProperties().get("width", Integer.class);
@@ -118,8 +118,8 @@ public class GameWorld implements Disposable {
         return collidables;
     }
 
-    public static ArrayList<Point> getWalkableSpace(TiledMap map) {
-        boolean[][] spawnableArea = GameWorld.getCollidables(map);
+    public ArrayList<Point> getWalkableSpace() {
+        boolean[][] spawnableArea = getCollidables();
         ArrayList<Point> spawnableLocations = new ArrayList<>();
 
         for (int x = 0; x < spawnableArea.length; x++) {

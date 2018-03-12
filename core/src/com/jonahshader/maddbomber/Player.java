@@ -214,7 +214,7 @@ public class Player implements InputProcessor {
 
         if (directionalKeysPressed == 1) {
             boolean[][] movementKernel = new boolean[3][3];
-            boolean[][] collidables = GameWorld.getCollidables(map);
+            boolean[][] collidables = gameWorld.getCollidables();
 
             int tempTileX = (int) (x / TILE_SIZE);
             int tempTileY = (int) (y / TILE_SIZE);
