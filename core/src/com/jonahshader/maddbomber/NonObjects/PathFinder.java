@@ -11,7 +11,7 @@ obstacles array: true = obstacle, false = clear
 public class PathFinder {
     public static ArrayList<Point> findPath(boolean[][] targets, boolean[][] obstacles) {
         ArrayList<Point> path = new ArrayList<>();
-
+        //asdf
         return path;
     }
 
