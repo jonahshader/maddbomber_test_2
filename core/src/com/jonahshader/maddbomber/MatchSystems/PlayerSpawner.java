@@ -1,11 +1,9 @@
 package com.jonahshader.maddbomber.MatchSystems;
 
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.jonahshader.maddbomber.GameWorld;
 import com.jonahshader.maddbomber.Player;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 public class PlayerSpawner {

@@ -21,16 +21,17 @@ import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
 
 public class Player implements InputProcessor {
 
-    final static double FRICTION_REGULAR = 15;
+    final static double ACCELERATION_REGULAR = 15;
     //Center of player sprite
     //in world pixels
     protected double x, y, xSpeed, ySpeed;
     private double maxSpeedCurrent;
-    final static double INITIAL_MAX_SPEED = 225;
+    private double acceleration = ACCELERATION_REGULAR;
+    final static double INITIAL_SPEED = 225;
+    final static double MAX_SPEED = 1500;
     private static double width = 26;
     private static double height = 26;
-    final static double MOVE_AUTO_CORRECT_THRESHOLD = (TILE_SIZE - width) / 2;
-//    final static double MOVE_AUTO_CORRECT_THRESHOLD = 0;
+    private final static double MOVE_AUTO_CORRECT_THRESHOLD = (TILE_SIZE - width) / 2;
     private int bombsDeployed = 0;
     private int maxDeployedBombs;
     private int explosionSize;
@@ -347,8 +348,8 @@ public class Player implements InputProcessor {
         }
 
         //add temp speed from keyboard input to the player's actual speed
-        xSpeed += tempXSpd * FRICTION_REGULAR * dt * 2;
-        ySpeed += tempYSpd * FRICTION_REGULAR * dt * 2;
+        xSpeed += tempXSpd * acceleration * dt * 2;
+        ySpeed += tempYSpd * acceleration * dt * 2;
 
         //clamp values to max speed
         xSpeed = limit(xSpeed, -(maxSpeedCurrent * dt), (maxSpeedCurrent * dt));
@@ -358,14 +359,14 @@ public class Player implements InputProcessor {
 
         //apply friction to x
         if (xSpeed > 0) {
-            if ((xSpeed - (dt * FRICTION_REGULAR)) > 0) {
-                xSpeed -= (dt * FRICTION_REGULAR);
+            if ((xSpeed - (dt * acceleration)) > 0) {
+                xSpeed -= (dt * acceleration);
             } else {
                 xSpeed = 0;
             }
         } else if (xSpeed < 0) {
-            if ((xSpeed + (dt * FRICTION_REGULAR)) < 0) {
-                xSpeed += (dt * FRICTION_REGULAR);
+            if ((xSpeed + (dt * acceleration)) < 0) {
+                xSpeed += (dt * acceleration);
             } else {
                 xSpeed = 0;
             }
@@ -373,14 +374,14 @@ public class Player implements InputProcessor {
 
 //        //apply friction to x
 //        if (xSpeed > 0) {
-//            if ((xSpeed - (FRICTION_REGULAR)) > 0) {
-//                xSpeed -= (FRICTION_REGULAR);
+//            if ((xSpeed - (acceleration)) > 0) {
+//                xSpeed -= (acceleration);
 //            } else {
 //                xSpeed = 0;
 //            }
 //        } else if (xSpeed < 0) {
-//            if ((xSpeed + (FRICTION_REGULAR)) < 0) {
-//                xSpeed += (FRICTION_REGULAR);
+//            if ((xSpeed + (acceleration)) < 0) {
+//                xSpeed += (acceleration);
 //            } else {
 //                xSpeed = 0;
 //            }
@@ -388,14 +389,14 @@ public class Player implements InputProcessor {
 
         //apply friction to y
         if (ySpeed > 0) {
-            if ((ySpeed - (dt * FRICTION_REGULAR)) > 0) {
-                ySpeed -= (dt * FRICTION_REGULAR);
+            if ((ySpeed - (dt * acceleration)) > 0) {
+                ySpeed -= (dt * acceleration);
             } else {
                 ySpeed = 0;
             }
         } else if (ySpeed < 0) {
-            if ((ySpeed + (dt * FRICTION_REGULAR)) < 0) {
-                ySpeed += (dt * FRICTION_REGULAR);
+            if ((ySpeed + (dt * acceleration)) < 0) {
+                ySpeed += (dt * acceleration);
             } else {
                 ySpeed = 0;
             }
@@ -516,7 +517,8 @@ public class Player implements InputProcessor {
     }
 
     protected void resetStats() {
-        maxSpeedCurrent = INITIAL_MAX_SPEED;
+        maxSpeedCurrent = INITIAL_SPEED;
+        acceleration = ACCELERATION_REGULAR;
         maxDeployedBombs = 1;
         explosionSize = 1;
     }
@@ -555,8 +557,21 @@ public class Player implements InputProcessor {
         }
     }
 
+    public PlayerSpawner getSpawner() {
+        return spawner;
+    }
+
     public void increaseSpeedByFactor(double v) {
         maxSpeedCurrent *= v;
+        acceleration *= v; //TODO: i broke this
+    }
+
+    public void increaseMaxBomx(int increment) {
+        maxDeployedBombs += increment;
+    }
+
+    public void increaseExplosionRadius(int increment) {
+        explosionSize += increment;
     }
 
     public void givePoints(int pointsToAdd) {

@@ -1,6 +1,5 @@
 package com.jonahshader.maddbomber.GameItems.Pickups;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -10,7 +9,7 @@ import com.jonahshader.maddbomber.Player;
 
 
 public class Pickup {
-    final static double SPEED_INCREASE_FACTOR = 1.1;
+    final static double SPEED_INCREASE_FACTOR = 1.3; //1.1
     public enum PickupType {
         BOMB_COUNT_INCREASE,
         EXPLOSION_SIZE_INCREASE,
@@ -66,6 +65,8 @@ public class Pickup {
                 break;
             case SPEED_INCREASE:
                 user.increaseSpeedByFactor(SPEED_INCREASE_FACTOR);
+                user.increaseMaxBomx(1);
+                user.increaseExplosionRadius(1);
                 break;
         }
         isUsed = true;
