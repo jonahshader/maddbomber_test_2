@@ -14,8 +14,10 @@ import static com.jonahshader.maddbomber.MatchSystems.Match.invertBooleanArray;
 
 public class AIPlayer extends Player {
 
-    public final int TILE_MOVE_THRESHOLD = 4;
+    public final int TILE_MOVE_THRESHOLD = 2;
     private double bombSpawnTimeout;
+
+    ArrayList<PointInt> currentPath;
 
     AIState state;
 
@@ -29,6 +31,7 @@ public class AIPlayer extends Player {
     public AIPlayer(int tileX, int tileY, ControlProfile controlProfile, GameWorld gameWorld, MaddBomber game, int playerId, Color playerColor) {
         super(tileX, tileY, controlProfile, gameWorld, game, playerId, playerColor);
         bombSpawnTimeout = 0;
+        currentPath = null;
     }
 
     @Override
@@ -74,6 +77,11 @@ public class AIPlayer extends Player {
     @Override
     public void kill(Player killer, String cause) {
         System.out.println(state);
+        System.out.println(currentPath); //TODO: print out in for loop
+        if (currentPath != null)
+            for (PointInt pointInt : currentPath) {
+                System.out.println(pointInt);
+            }
         super.kill(killer, cause);
     }
 
@@ -119,8 +127,15 @@ public class AIPlayer extends Player {
         boolean[][] collidables = gameWorld.getCollidables();
 //        invertBooleanArray(collidables);
         for (Explosion explosion : gameWorld.getExplosions()) {
+//            System.out.println("added explosion to array at: " + explosion.getTileX() + ", " + explosion.getTileY());
             collidables[explosion.getTileX()][explosion.getTileY()] = true;
         }
+
+//        for (int x = 0; x < mapTileWidth; x++) {
+//            for (int y = 0; y < mapTileHeight; y++) {
+//                collidables[x][y] = true;
+//            }
+//        }
         switch (state) {
             case PURSUING_PLAYER:
                 path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), new PointInt((int) (target.x / TILE_SIZE), (int) (target.y / TILE_SIZE)), collidables, mapTileWidth, mapTileHeight);
@@ -129,11 +144,7 @@ public class AIPlayer extends Player {
                 path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), new PointInt(closestPickup.getTileX(), closestPickup.getTileY()), collidables, mapTileWidth, mapTileHeight);
                 break;
             case AVOIDING_DEATH:
-                boolean[][] tempCollidables = gameWorld.getCollidables();
-                for (Explosion explosion : gameWorld.getExplosions()) {
-                    tempCollidables[explosion.getTileX()][explosion.getTileY()] = true;
-                }
-                path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), gameWorld.findSafeZones(), tempCollidables, mapTileWidth, mapTileHeight);
+                path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), gameWorld.findSafeZones(), collidables, mapTileWidth, mapTileHeight);
                 break;
             default:
                 break;
@@ -154,8 +165,10 @@ public class AIPlayer extends Player {
             for (Explosion explosion : gameWorld.getExplosions()) {
                 safeSpots[explosion.getTileX()][explosion.getTileY()] = false;
             }
-            path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), spotsToBomb, safeSpots, mapTileWidth, mapTileHeight);
+            path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), spotsToBomb, collidables, mapTileWidth, mapTileHeight);
         }
+
+        currentPath = path;
 
         double targetX = 0;
         double targetY = 0;
@@ -180,7 +193,7 @@ public class AIPlayer extends Player {
                 targetX = (path.get(closestPathPointIndex - 1).x * TILE_SIZE) + (TILE_SIZE / 2);
                 targetY = (path.get(closestPathPointIndex - 1).y * TILE_SIZE) + (TILE_SIZE / 2);
                 double tempTargetDist = Math.sqrt(Math.pow(targetX - x, 2) + Math.pow(targetY - y, 2));
-                if (tempTargetDist > TILE_SIZE) {
+                if (tempTargetDist > (TILE_SIZE + TILE_MOVE_THRESHOLD)) {
                     targetX = (path.get(closestPathPointIndex).x * TILE_SIZE) + (TILE_SIZE / 2);
                     targetY = (path.get(closestPathPointIndex).y * TILE_SIZE) + (TILE_SIZE / 2);
                 }

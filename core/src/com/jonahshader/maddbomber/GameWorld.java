@@ -103,6 +103,10 @@ public class GameWorld implements Disposable {
         return players;
     }
 
+    /**
+     *
+     * @return true = collidable, false = free space
+     */
     public boolean[][] getCollidables() {
         TiledMapTileLayer walls = (TiledMapTileLayer) map.getLayers().get("Walls");
         TiledMapTileLayer explodable = (TiledMapTileLayer) map.getLayers().get("Explodable");
@@ -152,6 +156,10 @@ public class GameWorld implements Disposable {
         return spawnableLocations;
     }
 
+    /**
+     *
+     * @return true = safe, false = unsafe
+     */
     public boolean[][] findSafeZones() {
         boolean[][] safeZones = getCollidables(); //Start off with all of the collidables in the game, with true being a collidable.
         ArrayList<Point> futureExplosions = new ArrayList<>(); //arraylist to store all future explosion coordinates
@@ -161,6 +169,10 @@ public class GameWorld implements Disposable {
         }
         for (Point point : futureExplosions) { //convert the arraylist of coordinates and add it to the 2d boolean array
             safeZones[(int) point.getX()][(int) point.getY()] = true;
+        }
+
+        for (Explosion explosion : explosions) {
+            safeZones[explosion.getTileX()][explosion.getTileY()] = true;
         }
 
         //Invert the array so that true = safe and false = unsafe. (this makes this method mesh better with the path finder)

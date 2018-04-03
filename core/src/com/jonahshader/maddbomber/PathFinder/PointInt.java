@@ -12,4 +12,12 @@ public class PointInt {
         x = pathEnd.x;
         y = pathEnd.y;
     }
+
+    @Override
+    public String toString() {
+        return "PointInt{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

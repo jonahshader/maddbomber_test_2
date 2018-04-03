@@ -21,7 +21,7 @@
  </layer>
  <layer name="Explodable" width="24" height="16">
   <data encoding="base64" compression="zlib">
-   eJztlDsOACAIQ+X+l3YlxH4wsslCbLA81LjWfETKUdY5nzS1l/WrWvVQe05MjF/NgfhdjXEpjc1duTr1roYYHS+Xt1ODYsJ/+nzc+3J4kT9jRHHz1v//oPu9jA3hSwCf
+   eJzFk1EKACAIQ+3+l+5XxG1KVkIENuZLy+x+LLezZQ2d17N63i/6Z9of/NUc41K5yKjOunqlO/WK+izHalf7f8Mf3Yn1WGk6Xmi21Zm8eJ+xtvo7nf+luNB8ES/zU1wT/JOxAQzKAK4=
   </data>
  </layer>
  <layer name="Walls" width="24" height="16">

@@ -21,13 +21,13 @@ import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
 
 public class Player implements InputProcessor {
 
-    final static double ACCELERATION_REGULAR = 14;
+    final static double ACCELERATION_REGULAR = 18;
     //Center of player sprite
     //in world pixels
     protected double x, y, xSpeed, ySpeed;
     private double maxSpeedCurrent;
     private double acceleration = ACCELERATION_REGULAR;
-    final static double INITIAL_SPEED = 227;
+    final static double INITIAL_SPEED = 230;
     final static double MAX_SPEED = 1500;
     private static double width = 26; //26
     private static double height = 26;
@@ -372,20 +372,6 @@ public class Player implements InputProcessor {
             }
         }
 
-//        //apply friction to x
-//        if (xSpeed > 0) {
-//            if ((xSpeed - (acceleration)) > 0) {
-//                xSpeed -= (acceleration);
-//            } else {
-//                xSpeed = 0;
-//            }
-//        } else if (xSpeed < 0) {
-//            if ((xSpeed + (acceleration)) < 0) {
-//                xSpeed += (acceleration);
-//            } else {
-//                xSpeed = 0;
-//            }
-//        }
 
         //apply friction to y
         if (ySpeed > 0) {
@@ -563,10 +549,13 @@ public class Player implements InputProcessor {
 
     public void increaseSpeedByFactor(double v) {
         maxSpeedCurrent *= v;
+        if (maxSpeedCurrent > MAX_SPEED) {
+            maxSpeedCurrent = MAX_SPEED;
+        }
         acceleration *= v; //TODO: i broke this
     }
 
-    public void increaseMaxBomx(int increment) {
+    public void increaseMaxBombs(int increment) {
         maxDeployedBombs += increment;
     }
 

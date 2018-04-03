@@ -1,5 +1,6 @@
 package com.jonahshader.maddbomber.GameItems.Pickups;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -7,9 +8,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.jonahshader.maddbomber.MaddBomber;
 import com.jonahshader.maddbomber.Player;
 
+import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
+
 
 public class Pickup {
-    final static double SPEED_INCREASE_FACTOR = 1.3; //1.1
+    final static double SPEED_INCREASE_FACTOR = 4.3; //1.1
     public enum PickupType {
         BOMB_COUNT_INCREASE,
         EXPLOSION_SIZE_INCREASE,
@@ -18,7 +21,7 @@ public class Pickup {
 
     private int tileX, tileY;
     private PickupType type;
-    private TextureRegion texture;
+    private Sprite sprite;
     private Rectangle hitbox;
     private boolean isUsed = false;
     private double lifespan;
@@ -28,25 +31,67 @@ public class Pickup {
         this.tileY = tileY;
         this.type = type;
 
+        switch(type) {
+            case BOMB_COUNT_INCREASE:
+                sprite = new Sprite(game.assets.manager.get(game.assets.itemAtlas, TextureAtlas.class).findRegion("bomb item tile"));
+                break;
+            case EXPLOSION_SIZE_INCREASE:
+                sprite = new Sprite(game.assets.manager.get(game.assets.itemAtlas, TextureAtlas.class).findRegion("explosion item tile"));
+                break;
+            case SPEED_INCREASE:
+                sprite = new Sprite(game.assets.manager.get(game.assets.itemAtlas, TextureAtlas.class).findRegion("shoes item tile"));
+                break;
+        }
+        setup();
+    }
 
+    public Pickup(int tileX, int tileY, MaddBomber game) {
+        this.tileX = tileX;
+        this.tileY = tileY;
 
-        lifespan = 20; // 20 second lifespan
-
-        hitbox = new Rectangle(tileX * MaddBomber.TILE_SIZE, tileY * MaddBomber.TILE_SIZE, MaddBomber.TILE_SIZE, MaddBomber.TILE_SIZE);
+        int typeTemp = (int) (Math.random() * 3.0);
+        switch(typeTemp) {
+            case 0:
+                type = PickupType.BOMB_COUNT_INCREASE;
+                break;
+            case 1:
+                type = PickupType.EXPLOSION_SIZE_INCREASE;
+                break;
+            case 2:
+                type = PickupType.SPEED_INCREASE;
+                break;
+            default:
+                type = PickupType.SPEED_INCREASE;
+                break;
+        }
 
         switch(type) {
             case BOMB_COUNT_INCREASE:
+                sprite = new Sprite(game.assets.manager.get(game.assets.itemAtlas, TextureAtlas.class).findRegion("bomb item tile"));
                 break;
             case EXPLOSION_SIZE_INCREASE:
+                sprite = new Sprite(game.assets.manager.get(game.assets.itemAtlas, TextureAtlas.class).findRegion("explosion item tile"));
                 break;
             case SPEED_INCREASE:
-                texture = game.assets.manager.get(game.assets.itemAtlas, TextureAtlas.class).findRegion("shoes item tile");
+                sprite = new Sprite(game.assets.manager.get(game.assets.itemAtlas, TextureAtlas.class).findRegion("shoes item tile"));
                 break;
         }
+        setup();
     }
 
+    private void setup() {
+        lifespan = 20; // 20 second lifespan
+        sprite.setPosition(tileX * TILE_SIZE, tileY * TILE_SIZE);
+        hitbox = new Rectangle(tileX * TILE_SIZE, tileY * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    }
+
+
     public void draw(SpriteBatch batch) {
-        batch.draw(texture, tileX * MaddBomber.TILE_SIZE, tileY * MaddBomber.TILE_SIZE);
+        if (lifespan < 3) {
+            sprite.setColor(1f, 1f, 1f, (float) (lifespan / 3.0f));
+            sprite.draw(batch);
+        }
+        sprite.draw(batch);
     }
 
     public Rectangle getHitbox() {
@@ -60,13 +105,13 @@ public class Pickup {
     public void use(Player user) {
         switch (type) {
             case BOMB_COUNT_INCREASE:
+                user.increaseMaxBombs(1);
                 break;
             case EXPLOSION_SIZE_INCREASE:
+                user.increaseExplosionRadius(1);
                 break;
             case SPEED_INCREASE:
                 user.increaseSpeedByFactor(SPEED_INCREASE_FACTOR);
-                user.increaseMaxBomx(1);
-                user.increaseExplosionRadius(1);
                 break;
         }
         isUsed = true;
