@@ -4,6 +4,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.jonahshader.maddbomber.GameItems.Bomb;
 import com.jonahshader.maddbomber.GameItems.Explosion;
 import com.jonahshader.maddbomber.GameItems.Pickups.Pickup;
+import com.jonahshader.maddbomber.PathFinder.PathFinder;
+import com.jonahshader.maddbomber.PathFinder.PointInt;
+
+import java.util.ArrayList;
 
 import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
 
@@ -184,6 +188,23 @@ public class AIPlayer extends Player {
             rightKeyDown = false;
             waitingPeriod -= dt;
         }
+
+
+        /////////////////////////////testing/////////////////////////////
+
+        ArrayList<PointInt> pathToSafety;
+        boolean[][] tempCollidables = gameWorld.getCollidables();
+//        for (int i = 0; i < tempCollidables.length; i++) {
+//            for (int j = 0; j < tempCollidables[i].length; j++) {
+//                tempCollidables[i][j] = !tempCollidables[i][j];
+//            }
+//        }
+        pathToSafety = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), gameWorld.findSafeZones(), tempCollidables, this.mapTileWidth, this.mapTileHeight);
+        if (pathToSafety != null) {
+            System.out.println("AAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAA");
+        }
+
+
         super.run(dt);
     }
 

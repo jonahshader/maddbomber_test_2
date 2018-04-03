@@ -46,8 +46,8 @@ public class Player implements InputProcessor {
     protected GameWorld gameWorld;
     protected MaddBomber game;
     private PlayerSpawner spawner;
-    private int mapTileWidth;
-    private int mapTileHeight;
+    protected int mapTileWidth;
+    protected int mapTileHeight;
     private boolean spawned = true;
     private int playerId;
 

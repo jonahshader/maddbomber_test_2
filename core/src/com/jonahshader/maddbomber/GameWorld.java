@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.jonahshader.maddbomber.GameItems.Bomb;
 import com.jonahshader.maddbomber.GameItems.Explosion;
 import com.jonahshader.maddbomber.GameItems.Pickups.Pickup;
+import com.jonahshader.maddbomber.NonObjects.ExplosionPropagator;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -130,6 +131,27 @@ public class GameWorld implements Disposable {
             }
         }
         return spawnableLocations;
+    }
+
+    public boolean[][] findSafeZones() {
+        boolean[][] safeZones = getCollidables(); //Start off with all of the collidables in the game, with true being a collidable.
+        ArrayList<Point> futureExplosions = new ArrayList<>(); //arraylist to store all future explosion coordinates
+        for (Bomb bomb : getBombs()) { //loop through all bombs in the game
+            futureExplosions.addAll(ExplosionPropagator.getExplosionPattern(bomb.getTileX(), bomb.getTileY(), bomb.getExplosionSize(), this)); //add each bomb's explosion propagation to the arraylist
+            safeZones[bomb.getTileX()][bomb.getTileY()] = true; //also add the bomb coordinate as an unsafe location
+        }
+        for (Point point : futureExplosions) { //convert the arraylist of coordinates and add it to the 2d boolean array
+            safeZones[(int) point.getX()][(int) point.getY()] = true;
+        }
+
+        //Invert the array so that true = safe and false = unsafe. (this makes this method mesh better with the path finder)
+        for (int i = 0; i < safeZones.length; i++) {
+            for (int j = 0; j < safeZones[i].length; j++) {
+                safeZones[i][j] = !safeZones[i][j];
+            }
+        }
+
+        return safeZones;
     }
 
     @Override
