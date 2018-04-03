@@ -10,6 +10,13 @@ public class PathFinder {
     private static int previousCellArraySize;
     private static PointInt pathEnd;
 
+
+
+    public static ArrayList<PointInt> findPath(PointInt start, PointInt target, boolean[][] world, int width, int height) {
+        boolean[][] targets = new boolean[width][height];
+        targets[target.x][target.y] = true;
+        return findPath(start, targets, world, width, height);
+    }
     /**
      * @param start   the starting coordinate for the path
      * @param targets false: not target. true: target.
@@ -26,16 +33,19 @@ public class PathFinder {
         noPath = false;
         previousCellArraySize = 1;
         cells.add(new Cell(start.x, start.y, start.x, start.y));
+        exploredArea[start.x][start.y] = true;
 
         while (!reachedTarget && !noPath) {
             spread(width, height, world, targets);
         }
+
         if (noPath) {
             return null;
         } else {
             ArrayList<PointInt> path = new ArrayList<>();
             PointInt parent = parents[pathEnd.x][pathEnd.y];
             boolean foundStart = false;
+            path.add(new PointInt(pathEnd));
             while (!foundStart) {
                 if (parent == null) {
                     foundStart = true;
@@ -61,7 +71,7 @@ public class PathFinder {
                 if (targets[x][y] && exploredArea[x][y]) {
                     //DONE!
                     pathEnd = new PointInt(x, y);
-                    System.out.println("Reached target.");
+//                    System.out.println("Reached target.");
                     reachedTarget = true;
                 } else {
                     if (exploredArea[x][y] && !newArea[x][y]) {
@@ -102,7 +112,7 @@ public class PathFinder {
             }
             tempCell.spreaded = true;
         }
-        if (cells.size() == previousCellArraySize) {
+        if (cells.size() == previousCellArraySize && !reachedTarget) {
             noPath = true;
 //            System.out.println("No path to target.");
 //            for (int y = 0; y < height; y++) {

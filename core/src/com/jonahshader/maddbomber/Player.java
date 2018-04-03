@@ -21,19 +21,19 @@ import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
 
 public class Player implements InputProcessor {
 
-    final static double ACCELERATION_REGULAR = 15;
+    final static double ACCELERATION_REGULAR = 14;
     //Center of player sprite
     //in world pixels
     protected double x, y, xSpeed, ySpeed;
     private double maxSpeedCurrent;
     private double acceleration = ACCELERATION_REGULAR;
-    final static double INITIAL_SPEED = 225;
+    final static double INITIAL_SPEED = 227;
     final static double MAX_SPEED = 1500;
-    private static double width = 26;
+    private static double width = 26; //26
     private static double height = 26;
     private final static double MOVE_AUTO_CORRECT_THRESHOLD = (TILE_SIZE - width) / 2;
     private int bombsDeployed = 0;
-    private int maxDeployedBombs;
+    protected int maxDeployedBombs;
     private int explosionSize;
     private int score = 0;
 

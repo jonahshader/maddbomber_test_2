@@ -116,6 +116,25 @@ public class GameWorld implements Disposable {
             }
         }
 
+        for (Bomb bomb : bombs) {
+            collidables[bomb.getTileX()][bomb.getTileY()] = true;
+        }
+
+        return collidables;
+    }
+
+    public boolean[][] getExplodables() {
+        TiledMapTileLayer explodable = (TiledMapTileLayer) map.getLayers().get("Explodable");
+        int width = map.getProperties().get("width", Integer.class);
+        int height = map.getProperties().get("height", Integer.class);
+        boolean[][] collidables = new boolean[width][height];
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                collidables[x][y] = explodable.getCell(x, y) != null;
+            }
+        }
+
         return collidables;
     }
 

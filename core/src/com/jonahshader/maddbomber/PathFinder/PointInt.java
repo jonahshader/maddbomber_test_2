@@ -7,4 +7,9 @@ public class PointInt {
         this.x = x;
         this.y = y;
     }
+
+    public PointInt(PointInt pathEnd) {
+        x = pathEnd.x;
+        y = pathEnd.y;
+    }
 }

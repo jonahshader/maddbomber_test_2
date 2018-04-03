@@ -10,15 +10,25 @@ import com.jonahshader.maddbomber.PathFinder.PointInt;
 import java.util.ArrayList;
 
 import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
+import static com.jonahshader.maddbomber.MatchSystems.Match.invertBooleanArray;
 
 public class AIPlayer extends Player {
 
-    double waitingPeriod = 0;
-    int motionlessCounts = 0;
-    final int MOTIONLESS_THRESHOLD = 3;
+    public final int TILE_MOVE_THRESHOLD = 4;
+    private double bombSpawnTimeout;
+
+    AIState state;
+
+    public enum AIState {
+        PURSUING_PLAYER,
+        PURSUING_PICKUP,
+        AVOIDING_DEATH,
+        BLOWING_UP_STUFF
+    }
 
     public AIPlayer(int tileX, int tileY, ControlProfile controlProfile, GameWorld gameWorld, MaddBomber game, int playerId, Color playerColor) {
         super(tileX, tileY, controlProfile, gameWorld, game, playerId, playerColor);
+        bombSpawnTimeout = 0;
     }
 
     @Override
@@ -63,29 +73,26 @@ public class AIPlayer extends Player {
 
     @Override
     public void kill(Player killer, String cause) {
+        System.out.println(state);
         super.kill(killer, cause);
-        waitingPeriod = 0;
     }
 
     @Override
     public void run(float dt) {
         Player target = null;
         double lowestDistance = 999999999;
-        double xDist = 0;
-        double yDist = 0;
         for (Player player : gameWorld.getPlayers()) {
             if (player != this && player.isSpawned()) {
                 double distance = Math.sqrt(Math.pow(player.x - x, 2) + Math.pow(player.y - y, 2));
                 if (distance < lowestDistance) {
                     lowestDistance = distance;
-                    xDist = player.x - x;
-                    yDist = player.y - y;
                     target = player;
                 }
             }
         }
 
         boolean pickupClosest = false;
+        state = AIState.PURSUING_PLAYER;
         Pickup closestPickup = null;
         for (Pickup pickup : gameWorld.getPickups()) {
             double pickupX = pickup.getTileX() * TILE_SIZE + (TILE_SIZE / 2);
@@ -93,10 +100,9 @@ public class AIPlayer extends Player {
             double distance = Math.sqrt(Math.pow(pickupX - x, 2) + Math.pow(pickupY - y, 2));
             if (distance < lowestDistance) {
                 pickupClosest = true;
+                state = AIState.PURSUING_PICKUP;
                 closestPickup = pickup;
                 lowestDistance = distance;
-                xDist = pickupX - x;
-                yDist = pickupY - y;
             }
         }
 
@@ -104,35 +110,104 @@ public class AIPlayer extends Player {
             createBomb();
         }
 
-        if (waitingPeriod <= 0) {
-            if (xSpeed == 0 && ySpeed == 0) {
-                if (getBombsDeployed() == 0) {
-                    if (Math.random() < 0.1 * dt) { //TODO: this sucks. replace it with a timer or something smarter
-                        createBomb();
-                    }
-                    motionlessCounts = 0;
-                } else {
-                    if (motionlessCounts >= MOTIONLESS_THRESHOLD) {
-                        resetWaitingPeriod();
-                    } else {
-                        motionlessCounts++;
-                    }
+        if (getBombsDeployed() > 0) {
+            state = AIState.AVOIDING_DEATH;
+        }
+
+
+        ArrayList<PointInt> path = null;
+        boolean[][] collidables = gameWorld.getCollidables();
+//        invertBooleanArray(collidables);
+        for (Explosion explosion : gameWorld.getExplosions()) {
+            collidables[explosion.getTileX()][explosion.getTileY()] = true;
+        }
+        switch (state) {
+            case PURSUING_PLAYER:
+                path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), new PointInt((int) (target.x / TILE_SIZE), (int) (target.y / TILE_SIZE)), collidables, mapTileWidth, mapTileHeight);
+                break;
+            case PURSUING_PICKUP:
+                path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), new PointInt(closestPickup.getTileX(), closestPickup.getTileY()), collidables, mapTileWidth, mapTileHeight);
+                break;
+            case AVOIDING_DEATH:
+                boolean[][] tempCollidables = gameWorld.getCollidables();
+                for (Explosion explosion : gameWorld.getExplosions()) {
+                    tempCollidables[explosion.getTileX()][explosion.getTileY()] = true;
+                }
+                path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), gameWorld.findSafeZones(), tempCollidables, mapTileWidth, mapTileHeight);
+                break;
+            default:
+                break;
+        }
+
+        if (path == null && state != AIState.AVOIDING_DEATH) {
+            state = AIState.BLOWING_UP_STUFF;
+            boolean[][] explodables = gameWorld.getExplodables();
+            boolean[][] spotsToBomb = new boolean[mapTileWidth][mapTileHeight];
+            for (int x = 1; x < mapTileWidth - 1; x++) {
+                for (int y = 1; y < mapTileHeight - 1; y++) {
+                    spotsToBomb[x][y] = explodables[x][y] || explodables[x + 1][y] || explodables[x - 1][y] || explodables[x][y + 1] || explodables[x][y - 1];
                 }
             }
+
+            boolean[][] safeSpots = gameWorld.findSafeZones();
+            invertBooleanArray(safeSpots);
+            for (Explosion explosion : gameWorld.getExplosions()) {
+                safeSpots[explosion.getTileX()][explosion.getTileY()] = false;
+            }
+            path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), spotsToBomb, safeSpots, mapTileWidth, mapTileHeight);
         }
 
         double targetX = 0;
         double targetY = 0;
+        boolean dontMove = false;
 
-        if (pickupClosest) {
-            targetX = closestPickup.getTileX() * TILE_SIZE + (TILE_SIZE / 2);
-            targetY = closestPickup.getTileY() * TILE_SIZE + (TILE_SIZE / 2);
-        } else {
-            if (target != null) {
-                targetX = target.x;
-                targetY = target.y;
+        double closestPathPointDistance = 999999;
+        int closestPathPointIndex = 0;
+        if (path != null) {
+            for (int i = 0; i < path.size(); i++) {
+                PointInt pointInt = path.get(i);
+                double cellX = pointInt.x * TILE_SIZE + TILE_SIZE / 2;
+                double cellY = pointInt.y * TILE_SIZE + TILE_SIZE / 2;
+                double tempDist = Math.pow(cellX - x, 2);
+                tempDist += Math.pow(cellY - y, 2);
+                tempDist = Math.sqrt(tempDist);
+                if (tempDist < closestPathPointDistance) {
+                    closestPathPointDistance = tempDist;
+                    closestPathPointIndex = i;
+                }
             }
+            if (closestPathPointIndex > 0) {
+                targetX = (path.get(closestPathPointIndex - 1).x * TILE_SIZE) + (TILE_SIZE / 2);
+                targetY = (path.get(closestPathPointIndex - 1).y * TILE_SIZE) + (TILE_SIZE / 2);
+                double tempTargetDist = Math.sqrt(Math.pow(targetX - x, 2) + Math.pow(targetY - y, 2));
+                if (tempTargetDist > TILE_SIZE) {
+                    targetX = (path.get(closestPathPointIndex).x * TILE_SIZE) + (TILE_SIZE / 2);
+                    targetY = (path.get(closestPathPointIndex).y * TILE_SIZE) + (TILE_SIZE / 2);
+                }
+            } else {
+                targetX = (path.get(closestPathPointIndex).x * TILE_SIZE) + (TILE_SIZE / 2);
+                targetY = (path.get(closestPathPointIndex).y * TILE_SIZE) + (TILE_SIZE / 2);
+
+                double tempTargetDist = Math.sqrt(Math.pow(targetX - x, 2) + Math.pow(targetY - y, 2));
+                if (tempTargetDist < TILE_MOVE_THRESHOLD) {
+                    dontMove = true;
+                }
+
+                if (state == AIState.BLOWING_UP_STUFF) {
+                    if (bombSpawnTimeout <= 0) {
+                        createBomb();
+                        bombSpawnTimeout = Explosion.EXPLOSION_TIME + Bomb.FUSE_TIME_MAX;
+                    }
+                }
+            }
+
+        } else {
+            if (state == AIState.BLOWING_UP_STUFF) {
+                System.out.println("bad things");
+            }
+            dontMove = true;
         }
+
 
         //reset all keys beforehand
         upKeyDown = false;
@@ -140,8 +215,12 @@ public class AIPlayer extends Player {
         leftKeyDown = false;
         rightKeyDown = false;
 
-        if (getBombsDeployed() == 0) {
-            if (Math.abs(yDist) > TILE_SIZE || Math.abs(xDist) < TILE_SIZE) {
+        double xDist = targetX - x;
+        double yDist = targetY - y;
+
+
+        if (!dontMove) {
+            if (Math.abs(yDist) > TILE_MOVE_THRESHOLD || Math.abs(xDist) < TILE_MOVE_THRESHOLD) {
                 if (targetY > y) {
                     upKeyDown = true;
                     downKeyDown = false;
@@ -150,7 +229,7 @@ public class AIPlayer extends Player {
                     downKeyDown = true;
                 }
             }
-            if (Math.abs(xDist) > TILE_SIZE || Math.abs(yDist) < TILE_SIZE) {
+            if (Math.abs(xDist) > TILE_MOVE_THRESHOLD || Math.abs(yDist) < TILE_MOVE_THRESHOLD) {
                 if (targetX > x) {
                     rightKeyDown = true;
                     leftKeyDown = false;
@@ -160,61 +239,23 @@ public class AIPlayer extends Player {
                 }
             }
         } else {
-            if (Math.abs(yDist) > TILE_SIZE || Math.abs(xDist) < TILE_SIZE) {
-                if (targetY > y) {
-                    upKeyDown = false;
-                    downKeyDown = true;
-                } else {
-                    upKeyDown = true;
-                    downKeyDown = false;
-                }
-            }
-            if (Math.abs(xDist) > TILE_SIZE || Math.abs(yDist) < TILE_SIZE) {
-                if (targetX > x) {
-                    rightKeyDown = false;
-                    leftKeyDown = true;
-                } else {
-                    rightKeyDown = true;
-                    leftKeyDown = false;
-                }
-            }
-        }
-
-        //Wait for explosion to finish
-        if (waitingPeriod >= 0) {
             upKeyDown = false;
             downKeyDown = false;
             leftKeyDown = false;
             rightKeyDown = false;
-            waitingPeriod -= dt;
         }
 
+//        System.out.println(state);
 
-        /////////////////////////////testing/////////////////////////////
-
-        ArrayList<PointInt> pathToSafety;
-        boolean[][] tempCollidables = gameWorld.getCollidables();
-//        for (int i = 0; i < tempCollidables.length; i++) {
-//            for (int j = 0; j < tempCollidables[i].length; j++) {
-//                tempCollidables[i][j] = !tempCollidables[i][j];
-//            }
-//        }
-        pathToSafety = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), gameWorld.findSafeZones(), tempCollidables, this.mapTileWidth, this.mapTileHeight);
-        if (pathToSafety != null) {
-            System.out.println("AAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAA");
+        if (bombSpawnTimeout > 0) {
+            bombSpawnTimeout -= dt;
         }
-
 
         super.run(dt);
-    }
-
-    private void resetWaitingPeriod() {
-        waitingPeriod = Bomb.FUSE_TIME_MAX + Explosion.EXPLOSION_TIME;
     }
 
     @Override
     protected void resetStats() {
         super.resetStats();
-        waitingPeriod = 0;
     }
 }
