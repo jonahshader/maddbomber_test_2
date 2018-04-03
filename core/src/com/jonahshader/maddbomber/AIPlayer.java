@@ -114,7 +114,7 @@ public class AIPlayer extends Player {
             }
         }
 
-        if (lowestDistance < 1.4 * TILE_SIZE && !pickupClosest) {
+        if (lowestDistance < (explosionSize) * TILE_SIZE && !pickupClosest) {
             createBomb();
         }
 
@@ -131,17 +131,21 @@ public class AIPlayer extends Player {
             collidables[explosion.getTileX()][explosion.getTileY()] = true;
         }
 
-//        for (int x = 0; x < mapTileWidth; x++) {
-//            for (int y = 0; y < mapTileHeight; y++) {
-//                collidables[x][y] = true;
-//            }
-//        }
+        boolean[][] safeZones = gameWorld.findSafeZones();
+
+        for (int x = 0; x < mapTileWidth; x++) {
+            for (int y = 0; y < mapTileHeight; y++) {
+                safeZones[x][y] = collidables[x][y] || !safeZones[x][y];
+            }
+        }
         switch (state) {
             case PURSUING_PLAYER:
-                path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), new PointInt((int) (target.x / TILE_SIZE), (int) (target.y / TILE_SIZE)), collidables, mapTileWidth, mapTileHeight);
+                if (target != null)
+                    path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), new PointInt((int) (target.x / TILE_SIZE), (int) (target.y / TILE_SIZE)), safeZones, mapTileWidth, mapTileHeight);
                 break;
             case PURSUING_PICKUP:
-                path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), new PointInt(closestPickup.getTileX(), closestPickup.getTileY()), collidables, mapTileWidth, mapTileHeight);
+                if (closestPickup != null)
+                    path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), new PointInt(closestPickup.getTileX(), closestPickup.getTileY()), safeZones, mapTileWidth, mapTileHeight);
                 break;
             case AVOIDING_DEATH:
                 path = PathFinder.findPath(new PointInt((int) (x / TILE_SIZE), (int) (y / TILE_SIZE)), gameWorld.findSafeZones(), collidables, mapTileWidth, mapTileHeight);

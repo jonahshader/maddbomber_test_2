@@ -12,7 +12,7 @@ import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
 
 
 public class Pickup {
-    final static double SPEED_INCREASE_FACTOR = 4.3; //1.1
+    final static double SPEED_INCREASE_FACTOR = 0.3; //1.1
     public enum PickupType {
         BOMB_COUNT_INCREASE,
         EXPLOSION_SIZE_INCREASE,
@@ -55,7 +55,15 @@ public class Pickup {
                 type = PickupType.BOMB_COUNT_INCREASE;
                 break;
             case 1:
-                type = PickupType.EXPLOSION_SIZE_INCREASE;
+                if (Math.random() > 0.75) {
+                    type = PickupType.BOMB_COUNT_INCREASE;
+                } else {
+                    if (Math.random() > 0.5) {
+                        type = PickupType.EXPLOSION_SIZE_INCREASE;
+                    } else {
+                        type = PickupType.SPEED_INCREASE;
+                    }
+                }
                 break;
             case 2:
                 type = PickupType.SPEED_INCREASE;

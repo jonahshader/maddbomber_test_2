@@ -125,8 +125,8 @@ public class Explosion {
     }
 
     private void spawnRandomItem() {
-        //10% chance of spawning an item
-        if (Math.random() < 0.1) {
+        //20% chance of spawning an item
+        if (Math.random() < 0.2) {
             //spawn something
             gameWorld.getPickups().add(new Pickup(tileX, tileY, game));
             System.out.println("Pickup spawned!");

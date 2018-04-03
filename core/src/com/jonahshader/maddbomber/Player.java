@@ -21,20 +21,20 @@ import static com.jonahshader.maddbomber.MaddBomber.TILE_SIZE;
 
 public class Player implements InputProcessor {
 
-    final static double ACCELERATION_REGULAR = 18;
+    final static double ACCELERATION_REGULAR = 10;
     //Center of player sprite
     //in world pixels
-    protected double x, y, xSpeed, ySpeed;
+    double x, y, xSpeed, ySpeed;
     private double maxSpeedCurrent;
     private double acceleration = ACCELERATION_REGULAR;
-    final static double INITIAL_SPEED = 230;
-    final static double MAX_SPEED = 1500;
-    private static double width = 26; //26
-    private static double height = 26;
+    final static double INITIAL_SPEED = 1.5;
+    final static double MAX_SPEED = 10;
+    private static double width = 24; //26
+    private static double height = 24;
     private final static double MOVE_AUTO_CORRECT_THRESHOLD = (TILE_SIZE - width) / 2;
     private int bombsDeployed = 0;
-    protected int maxDeployedBombs;
-    private int explosionSize;
+    int maxDeployedBombs;
+    int explosionSize;
     private int score = 0;
 
     private Sprite sprite;
@@ -43,11 +43,11 @@ public class Player implements InputProcessor {
     private Rectangle hitbox;
     private TiledMap map;
     private MapProperties prop;
-    protected GameWorld gameWorld;
+    GameWorld gameWorld;
     protected MaddBomber game;
     private PlayerSpawner spawner;
-    protected int mapTileWidth;
-    protected int mapTileHeight;
+    int mapTileWidth;
+    int mapTileHeight;
     private boolean spawned = true;
     private int playerId;
 
@@ -56,7 +56,7 @@ public class Player implements InputProcessor {
 
     //controls
     private ControlProfile controlProfile;
-    protected boolean upKeyDown, downKeyDown, leftKeyDown, rightKeyDown, placeKeyDown, activateKeyDown;
+    boolean upKeyDown, downKeyDown, leftKeyDown, rightKeyDown, placeKeyDown, activateKeyDown;
 
     public Player(int tileX, int tileY, ControlProfile controlProfile, GameWorld gameWorld, MaddBomber game, int playerId, Color playerColor) {
         this.playerId = playerId;
@@ -351,12 +351,6 @@ public class Player implements InputProcessor {
         xSpeed += tempXSpd * acceleration * dt * 2;
         ySpeed += tempYSpd * acceleration * dt * 2;
 
-        //clamp values to max speed
-        xSpeed = limit(xSpeed, -(maxSpeedCurrent * dt), (maxSpeedCurrent * dt));
-        ySpeed = limit(ySpeed, -(maxSpeedCurrent * dt), (maxSpeedCurrent * dt));
-//        xSpeed = limit(xSpeed, -(maxSpeedCurrent), (maxSpeedCurrent));
-//        ySpeed = limit(ySpeed, -(maxSpeedCurrent), (maxSpeedCurrent));
-
         //apply friction to x
         if (xSpeed > 0) {
             if ((xSpeed - (dt * acceleration)) > 0) {
@@ -371,7 +365,6 @@ public class Player implements InputProcessor {
                 xSpeed = 0;
             }
         }
-
 
         //apply friction to y
         if (ySpeed > 0) {
@@ -388,11 +381,12 @@ public class Player implements InputProcessor {
             }
         }
 
-        //move the player based on this speed
-//        x += (xSpeed * dt) * TILE_SIZE;
-//        y += (ySpeed * dt) * TILE_SIZE;
-        x += xSpeed * TILE_SIZE * (1.0/144);
-        y += ySpeed * TILE_SIZE * (1.0/144);
+        //clamp values to max speed
+        xSpeed = limit(xSpeed, -(maxSpeedCurrent), (maxSpeedCurrent));
+        ySpeed = limit(ySpeed, -(maxSpeedCurrent), (maxSpeedCurrent));
+
+        x += xSpeed * TILE_SIZE * dt;
+        y += ySpeed * TILE_SIZE * dt;
 
         if (xSpeed != 0 || ySpeed != 0) {
             sprite.setRotation((float) (180.0 * Math.atan2(ySpeed, xSpeed) / Math.PI) - 90);
@@ -548,11 +542,11 @@ public class Player implements InputProcessor {
     }
 
     public void increaseSpeedByFactor(double v) {
-        maxSpeedCurrent *= v;
+        maxSpeedCurrent += v;
         if (maxSpeedCurrent > MAX_SPEED) {
             maxSpeedCurrent = MAX_SPEED;
         }
-        acceleration *= v; //TODO: i broke this
+        acceleration += v;
     }
 
     public void increaseMaxBombs(int increment) {
