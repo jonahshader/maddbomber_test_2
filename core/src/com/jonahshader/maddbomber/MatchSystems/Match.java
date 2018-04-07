@@ -45,7 +45,7 @@ public class Match implements Disposable{
         this.game = game;
         this.playerCount = playerCount;
         gameCam = new OrthographicCamera(MaddBomber.V_WIDTH, MaddBomber.V_HEIGHT);
-        hud = new Hud();
+        hud = new Hud(game);
         gameWorld = new GameWorld(mapFileName);
         gamePort = new FitViewport(gameWorld.getMapProperties().get("width", Integer.class) * MaddBomber.TILE_SIZE, gameWorld.getMapProperties().get("height", Integer.class) * MaddBomber.TILE_SIZE, gameCam);
 //        gamePort = new StretchViewport(gameWorld.getMapProperties().get("width", Integer.class) * MaddBomber.TILE_SIZE, gameWorld.getMapProperties().get("height", Integer.class) * MaddBomber.TILE_SIZE, gameCam);
@@ -107,12 +107,14 @@ public class Match implements Disposable{
         game.batch.setProjectionMatrix(gameCam.combined);
         mapRenderer.setView(gameCam);
         mapRenderer.render();
-        hud.draw();
+
 
         game.batch.begin();
         game.batch.setProjectionMatrix(gameCam.combined);
         gameWorld.draw(game.batch);
         game.batch.end();
+
+        hud.draw();
 
 //        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 //        //draw button shapes

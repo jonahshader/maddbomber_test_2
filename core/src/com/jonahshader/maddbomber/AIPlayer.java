@@ -88,7 +88,7 @@ public class AIPlayer extends Player {
     @Override
     public void run(float dt) {
         Player target = null;
-        double lowestDistance = 999999999;
+        double lowestDistance = Double.MAX_VALUE;
         for (Player player : gameWorld.getPlayers()) {
             if (player != this && player.isSpawned()) {
                 double distance = Math.sqrt(Math.pow(player.x - x, 2) + Math.pow(player.y - y, 2));
@@ -106,6 +106,10 @@ public class AIPlayer extends Player {
             double pickupX = pickup.getTileX() * TILE_SIZE + (TILE_SIZE / 2);
             double pickupY = pickup.getTileY() * TILE_SIZE + (TILE_SIZE / 2);
             double distance = Math.sqrt(Math.pow(pickupX - x, 2) + Math.pow(pickupY - y, 2));
+            if (pickup.getType() == Pickup.PickupType.BOMB_COUNT_INCREASE) {
+                distance += 1000 * TILE_SIZE; //Discourage getting extra bombs, as they are not as useful to the AI.
+                                            //Here we make it appear further away to discourage getting the bomb powerup
+            }
             if (distance < lowestDistance) {
                 pickupClosest = true;
                 state = AIState.PURSUING_PICKUP;
@@ -115,7 +119,10 @@ public class AIPlayer extends Player {
         }
 
         if (lowestDistance < (explosionSize) * TILE_SIZE && !pickupClosest) {
-            createBomb();
+            if (bombSpawnTimeout <= 0) {
+                createBomb();
+                bombSpawnTimeout = Explosion.EXPLOSION_TIME + Bomb.FUSE_TIME_MAX;
+            }
         }
 
         if (getBombsDeployed() > 0) {
@@ -219,9 +226,9 @@ public class AIPlayer extends Player {
             }
 
         } else {
-            if (state == AIState.BLOWING_UP_STUFF) {
-                System.out.println("bad things");
-            }
+//            if (state == AIState.BLOWING_UP_STUFF) {
+//                System.out.println("bad things");
+//            }
             dontMove = true;
         }
 
