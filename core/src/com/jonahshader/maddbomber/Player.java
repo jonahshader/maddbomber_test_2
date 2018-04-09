@@ -27,7 +27,7 @@ public class Player implements InputProcessor {
     double x, y, xSpeed, ySpeed;
     private double maxSpeedCurrent;
     private double acceleration = ACCELERATION_REGULAR;
-    final static double INITIAL_SPEED = 1.5;
+    final static double INITIAL_SPEED = 1.2;
     final static double MAX_SPEED = 10;
     private static double width = 24; //26
     private static double height = 24;
@@ -318,7 +318,7 @@ public class Player implements InputProcessor {
                         }
                     }
                 }
-            } else {
+            } else if (downKeyDown) {
                 if (movementKernel[1][0]) { //if the spot directly to the bottom of the player is solid...
                     if (xBias > MOVE_AUTO_CORRECT_THRESHOLD) { //if the player is on the right half of the tile...
                         if (!movementKernel[2][0]) { //if the block directly to the bottom right of the player is not solid...

@@ -27,7 +27,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Match implements Disposable{
-    private final static float TIME_SCALE = 1;
+    private final static float TIME_SCALE = 1f;
     //Game systems stuff
     private MaddBomber game;
     private OrthographicCamera gameCam;
@@ -57,7 +57,7 @@ public class Match implements Disposable{
         Gdx.input.setInputProcessor(multiplexer);
 
         //temp: add a player to the map
-        addPlayer(new AIPlayer(
+        addPlayer(new Player(
                 2,
                 2,
                 game.controls.getControlProfile(0),
@@ -79,9 +79,9 @@ public class Match implements Disposable{
         addPlayer(new AIPlayer(21, 2, game.controls.getControlProfile(0), gameWorld, game, 3, new Color(0.1f, 0.2f, 0.3f, 0.8f)));
 //        gameWorld.getPlayers().get(2).getSpawner().requestRespawn();
 ////        gameWorld.getPlayers().get(3).getSpawner().requestRespawn();
-//        for (int i = 0; i < 60; i++) {
-//            addPlayer(new AIPlayer(14, 1, game.controls.getControlProfile(0), gameWorld, game, 3, new Color((float) Math.random(), (float) Math.random(), (float) Math.random(), 1f)));
-//        }
+        for (int i = 0; i < 4; i++) {
+            addPlayer(new AIPlayer(14, 1, game.controls.getControlProfile(0), gameWorld, game, 3, new Color((float) Math.random(), (float) Math.random(), (float) Math.random(), 1f)));
+        }
 
 
 
